@@ -9,7 +9,6 @@ var browserSync = require('browser-sync');
 var reload = browserSync.reload;
 // 引入组件
 var jshint = require('gulp-jshint');
-var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');

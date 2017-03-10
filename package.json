@@ -18,6 +18,7 @@
   },
   "devDependencies": {
     "browser-sync": "^2.14.0",
+    "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.1",
     "gulp-concat": "^2.6.0",
@@ -29,7 +30,7 @@
     "gulp-nodemon": "^2.2.1",
     "gulp-pngquant": "^1.0.10",
     "gulp-rename": "^1.2.2",
-    "gulp-sass": "^3.1.0",
+    "gulp-sass": "latest",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-sprite": "^0.0.4",
     "gulp-uglify": "^2.0.0",
