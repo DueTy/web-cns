@@ -1,0 +1,132 @@
+.block{
+    border: 1px solid #e7e7e7;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+    margin: 10px;
+}
+#site-title{
+    transition: color 1.5s;
+    font-weight: bold;
+    font-style: italic;
+    background-color: #f8f8f8;
+    width: 420px;
+    text-align: center;
+    border: 1px solid #e7e7e7;
+    padding: 20px;
+    margin-left: 40px;
+    border-radius: 5px;
+    font-size: 32px;
+}
+.page-nav{
+    min-height: 40px;
+    line-height: 40px;
+    padding: 0 30px;
+    margin: 0px;
+    border-radius: 0px;
+}
+.nav-list{
+    margin: 0px;
+    float: left;
+}
+.nav-button{
+    display: inline-block;
+}
+article{
+    padding: 0 30px;
+}
+.container{
+    width: 1200px;
+    margin: 0 auto;
+}
+.user-menu{
+    float: right;
+}
+.main-box{
+    margin: 30px 0 0 40px;
+}
+.aside-nav{
+    border: 1px solid;
+    border-color: #e7e7e7;
+    width: 200px;
+    padding: 0 20px;
+    font-size: 18px;
+    a{
+        cursor: pointer;
+        text-decoration: none;
+    }
+    float: left;
+}
+.login-form,.reg-form{
+    margin-top: 100px;
+    margin-left: 0px;
+}
+.banner{
+    width: 800px;
+    height: 450px;
+    float: left;
+    margin-left: 20px;
+    overflow: hidden;
+    .slider-list{
+        position: relative;
+        padding: 0px;
+    }
+    .slider-item{
+        height: 450px;
+        width: 800px;
+        float: left;
+    }
+}
+.unslider-arrow{
+    background-color: rgba(7, 7, 7, 0.6);
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    border-radius: 13px;
+    line-height: 25px;
+    text-indent: 9px;
+    transition: all 0.2s;
+    cursor: pointer;
+    color: #fff;
+    position: absolute;
+    display: none;
+    &:hover{
+        text-decoration: none;
+        color: #fff;
+        background-color: rgba(7, 7, 7, 0.8);
+    }
+}
+.unslider{
+    li{
+        float: left;
+        list-style: none;
+    }
+    .prev{
+        text-indent: 8px;
+    }
+    &:hover{
+        .unslider-arrow{
+            display: inline-block;
+        }
+    }
+
+}
+.unslider-nav{
+    text-align: center;
+    position: absolute;
+    .unslider-active{
+        background-color: #fff;
+    }
+    li{
+        display: block;
+        width: 12px;
+        height: 12px;
+        border:2px #fff solid;
+        border-radius: 7px;
+        transition: all 0.2s;
+        cursor: pointer;
+        margin: 0 5px;
+        &:hover{
+            background-color: #fff;
+        }
+    }
+}

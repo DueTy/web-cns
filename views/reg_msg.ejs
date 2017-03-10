@@ -1,0 +1,4 @@
+<% if(locals.islogin) {%>
+    恭喜你，<%= user %>，<%= msg %>，回到<a href="/home">主页</a>
+    <% }else{ %><h1>注册失败，请返回<a href="/reg">注册页</a></h1>
+<%}%>
