@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Test</title>
+    <title>web-cns</title>
     <script type="text/javascript" src="/dist/js/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="/sea.js"></script>
     <link rel="stylesheet" href="/dist/css/bootstrap.min.css" media="screen" title="no title" charset="utf-8">
@@ -12,11 +12,12 @@
 </head>
 
 <body>
-    <nav class="page-nav navbar-default block">
+    <div class="page-nav navbar-default block">
         <ul class="nav-list">
-            <li class="nav-button"><a title="主页" href="/home">首页</a></li>
-            <li class="nav-button"><a title="登陆" href="/login">登录</a></li>
-            <li class="nav-button"><a title="注册" href="/reg">注册</a></li>
+            <li class="site-logo nav-item due-if">&#xe606;</li>
+            <li class="nav-item"><a title="主页" href="/home">首页</a></li>
+            <li class="nav-item"><a title="登陆" href="/login">登录</a></li>
+            <li class="nav-item"><a title="注册" href="/reg">注册</a></li>
         </ul>
         <div class="user-menu">
             <% if(locals.islogin){%>
@@ -25,9 +26,4 @@
             <a class="login-button" href="/login">登录</a>
             <%}%>
         </div>
-    </nav>
-    <div>
-        <h1 id="site-title">· Algorithm is funny ·</h1>
     </div>
-
-    <div class="container">

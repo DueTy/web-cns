@@ -5,9 +5,9 @@ function connectServer() {
     var client = mysql.createConnection({
         host: 'localhost',
         user: 'root',
-        password: '7015258',
-        database: 'cms',
-        port: 3307
+        password: '701525',
+        database: 'cns',
+        port: 3306
     })
 
     return client;
