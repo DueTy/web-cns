@@ -20,7 +20,9 @@ define("fullPage",function(require,exports,module){
 	})(window.jQuery || require("jquery"));
 });
 define(function(require,exports,module){
+	//加载依赖模块
 	require("fullPage");
+
 	var main_box = $(".main-box"),
 		side_close = $(".side-close"),
 		side_open = $(".side-open");
