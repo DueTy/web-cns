@@ -153,6 +153,9 @@ article {
 .my-folders .due-if {
   font-size: 22px;
 }
+.folder-item-list {
+  overflow: auto;
+}
 .folder-item-list .folder-item {
   line-height: 25px;
   padding-left: 40px;
@@ -183,10 +186,12 @@ article {
   text-align: center;
   color: #737373;
   font-size: 18px;
+  background-color: #fff;
 }
 .side-close:hover,
 .side-open:hover {
   color: #010101;
+  font-weight: bold;
   background-color: #fff;
 }
 .side-close {
@@ -211,6 +216,9 @@ article {
 .search-bar-main {
   border: 1px solid #e0e1e5;
   border-width: 0 1px 1px 0;
+}
+.search-bar-main .view-list {
+  overflow: auto;
 }
 .search-bar-main .view-item {
   padding: 15px 20px;
@@ -304,4 +312,18 @@ article {
 }
 .page-side-close .side-open {
   display: inline-block;
+}
+.mCSB_container {
+  margin-right: 0;
+}
+.mCSB_draggerContainer {
+  margin-right: 0;
+}
+.mCSB_draggerContainer .mCSB_draggerRail {
+  visibility: hidden;
+}
+.mCSB_scrollTools .mCSB_dragger {
+  left: 10px;
+  width: 20px;
+  background: rgba(57, 141, 238, 0.3);
 }

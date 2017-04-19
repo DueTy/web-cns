@@ -14,7 +14,7 @@ define("fullPage",function(require,exports,module){
         	function setHeight(){        		
         		var _top = _this.offset().top,
         			w_h = $(window).height();
-        		_this.css("height",w_h-_top); 
+        		_this.css("height",w_h-_top-1); 
         	}
         }
 	})(window.jQuery || require("jquery"));
