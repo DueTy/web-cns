@@ -223,6 +223,7 @@ article {
 .search-bar-main .view-item {
   padding: 15px 20px;
   position: relative;
+  border-bottom: 1px solid #e0e1e5;
 }
 .search-bar-main .view-item:hover {
   background-color: #f6f7f9;
@@ -323,7 +324,7 @@ article {
   visibility: hidden;
 }
 .mCSB_scrollTools .mCSB_dragger {
-  left: 10px;
-  width: 20px;
+  left: 7px;
+  width: 26px;
   background: rgba(57, 141, 238, 0.3);
 }
