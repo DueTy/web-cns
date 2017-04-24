@@ -7,15 +7,38 @@ define("fullPage",function(require,exports,module){
             return console.warn("fullHeight needs jQuery");
         }
 
-        $.fn.fullHeight = function(){
-        	var _this = $(this);
+        $.fn.fullHeight = function(opts){
+            var defaults = {
+                main: "",
+                extra: []
+            };
+            var setting = $.extend(defaults,opts);
+        	var _this = $(this),
+                _extra = setting.extra;
+
+
         	setHeight();
         	$(window).on("resize",setHeight);
+
         	function setHeight(){        		
         		var _top = _this.offset().top,
+                    _extra_height = getExtraHeight(_extra),
         			w_h = $(window).height();
-        		_this.css("height",w_h-_top-1); 
+        		_this.css("height",w_h-_top-3-_extra_height); 
         	}
+
+            function getExtraHeight(extra_arr){
+                var tol_height =0;
+                if (extra_arr.length===0) {
+                    return tol_height;
+                }else{
+                    tol_height=10;
+                    for (var i = 0; i < extra_arr.length; i++) {
+                        tol_height+= $("."+extra_arr[i]).height();
+                    }
+                }                
+                return tol_height;
+            }
         }
 	})(window.jQuery || require("jquery"));
 });
@@ -26,10 +49,10 @@ define(function(require,exports,module){
 	require("customScrollBar");
 
 	var main_box = $(".main-box"),
-		side_close = $(".side-close"),
-		side_open = $(".side-open");
+	side_close = $(".side-close"),
+	side_open = $(".side-open");
 	var folder_item_list = $(".folder-item-list"),
-		view_list = $(".view-list");
+	view_list = $(".view-list");
 
 
 	side_close.on("click", sideBarOpt);
@@ -37,6 +60,7 @@ define(function(require,exports,module){
 
 	view_list.fullHeight();
 	folder_item_list.fullHeight();
+	
 	var scroll_opts = {
 		mouseWheelPixels: 250
 	}
@@ -48,6 +72,51 @@ define(function(require,exports,module){
 		main_box.toggleClass("page-side-close");
 		$(window).trigger("resize");
 	}
+	if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+		CKEDITOR.tools.enableHtml5Elements( document );
+
+	CKEDITOR.config.width = 'auto';
+
+
+	var initSample = ( function() {
+		var wysiwygareaAvailable = isWysiwygareaAvailable(),
+		isBBCodeBuiltIn = !!CKEDITOR.plugins.get( 'bbcode' );
+
+		return function() {
+			var editorElement = CKEDITOR.document.getById( 'editor' );
+
+
+			if ( wysiwygareaAvailable ) {
+				CKEDITOR.replace( 'editor' );
+
+			} else {
+				editorElement.setAttribute( 'contenteditable', 'true' );
+				CKEDITOR.inline( 'editor' );
+
+			}
+		};
+
+		function isWysiwygareaAvailable() {
+			if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+				return true;
+			}
+
+			return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+		}
+	} )();
+	initSample();
+
+
+	window.CKEDITOR.on("instanceReady", function (evt) {
+
+		var cke_contents = $(".cke_contents");
+
+		cke_contents.fullHeight({
+			extra:["cke_bottom"]
+		})
+		console.log(CKEDITOR.instances.editor._.data);
+	})
+
 });
 
 /*

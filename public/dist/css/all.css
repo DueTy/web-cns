@@ -355,6 +355,15 @@ article {
   width: 26px;
   background: rgba(57, 141, 238, 0.3);
 }
+.edit-cont {
+  position: relative;
+  height: 574px;
+}
+.edit-cont .cke_1 {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
 
 html,
 body,
