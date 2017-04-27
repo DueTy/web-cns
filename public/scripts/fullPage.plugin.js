@@ -39,6 +39,6 @@ define("fullPage",function(require,exports,module){
                 }                
                 return tol_height;
             }
-        }
+        };
 	})(window.jQuery || require("jquery"));
 });

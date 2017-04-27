@@ -19,7 +19,7 @@ define(function(require,exports,module){
 	
 	var scroll_opts = {
 		mouseWheelPixels: 250
-	}
+	};
 	view_list.mCustomScrollbar(scroll_opts);
 	folder_item_list.mCustomScrollbar(scroll_opts);
 
@@ -69,8 +69,8 @@ define(function(require,exports,module){
 
 		cke_contents.fullHeight({
 			extra:["cke_bottom"]
-		})
+		});
 		console.log(CKEDITOR.instances.editor._.data);
-	})
+	});
 
 });

@@ -51,7 +51,7 @@ gulp.task('nodemon', function(cb) {
 
 // 检查脚本
 gulp.task('lint', function() {
-    gulp.src(pub + '/scripts/*.js')
+    gulp.src([pub + '/scripts/*.plugin.js',pub + '/scripts/*.module.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
@@ -64,6 +64,17 @@ gulp.task('scripts', function() {
         .pipe(rename('all.min.js'))
         .pipe(uglify())
         .pipe(gulp.dest(pub + '/dist/js/'));
+});
+
+
+//合并、压缩路由
+gulp.task("routes",function(){
+    gulp.src(["./routes/header.js",'./routes/*.route.js',"./routes/footer.js"])
+        .pipe(concat('index_pre.js'))
+        .pipe(gulp.dest('./route/'))
+        .pipe(rename('index.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest('./route/'));
 });
 
 //精灵图生成
@@ -110,7 +121,7 @@ gulp.task('minifycss', function() {
 });
 // 默认任务
 gulp.task('default', function() {
-    var allOptions = ['lint', 'scripts', 'minifycss', 'less', 'sprite','browser-sync'];
+    var allOptions = ['lint', 'scripts', 'minifycss', 'less', 'sprite', "routes",'browser-sync'];
     gulp.run(allOptions);
 
 
@@ -126,8 +137,8 @@ gulp.task('default', function() {
                 gulp.run('minifycss');
                 break;
 
-            case ".js":
-                gulp.run('lint', 'scripts');
+            case ".js":                    
+                gulp.run('lint',filePath[filePath.length - 2]);
                 break;
 
             case ".less":
