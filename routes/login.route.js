@@ -13,7 +13,7 @@ router.route('/login').get(function(req, res) {
 }).post(function(req, res) {
     client = userCon.connect();
     result = null;
-    userCon.selectFun(client, req.body.username, function(result) {
+    userCon.userSelect(client, req.body.username, function(result) {
         if (result[0] === undefined) {
             res.send('没有该用户');
         } else {

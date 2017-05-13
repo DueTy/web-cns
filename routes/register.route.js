@@ -5,10 +5,17 @@ router.route('/reg').get(function(req, res) {
     });
 }).post(function(req, res) {
     client = userCon.connect();
-    userCon.insertFun(client, req.body.username, req.body.password, function(err) {
+    var user_name = req.body.username,
+        user_password = req.body.password,
+        user_id = uuidV4();
+    userCon.userInsert(client,
+     user_name, 
+     user_password, 
+     user_id, 
+     function(err) {
         if (err) throw err;
         if(!err){
-            req.session.islogin = req.body.username;
+            req.session.islogin = user_name;
             res.locals.islogin = req.session.islogin;
             res.cookie('islogin', res.locals.islogin, {
                 maxAge: 60000

@@ -8,7 +8,8 @@ router.get('/', function(req, res) {
     }
     res.render('index', {
         title: '首页',
-        user: res.locals.islogin,
-        side_test_data: side_test_data
+        user: res.locals.islogin,       
+        side_data: side_test_data,
+        search_data: search_test_data
     });
 });

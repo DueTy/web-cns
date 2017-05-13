@@ -1,20 +1,44 @@
 var express = require('express');
 var router = express.Router();
 var userCon = require('../dao/dbCon');
+var uuidV4 = require("uuid/v4");
 //引入art-template，并延展.ejs
 var art_temp = require("art-template");
 require.extensions[".ejs"] = art_temp.extension;
-
-
+//引入multer和md5依赖
+var multer = require("multer");
+var md5 = require("md5");
 
 var side_test_data = [];
 for (var i = 0; i < 20; i++) {
-    // var obj = {
-    //     note_name: "笔记"+(i+1)
-    // };
-    side_test_data.push("笔记"+(i+1)); 
+    var obj = {
+        folder_name: "笔记"+(i+1),
+        level: 1,
+        sub_list:[
+        	{
+        		folder_name: "level2",
+        		level:2,
+        		sub_list: [
+        			{
+        				folder_name: "level3",
+        				level:3,
+        				sub_list:[]
+        			}
+        		]
+        	}
+        ]
+    };
+    side_test_data.push(obj); 
 }
 
+var search_test_data = [];
+for (var i = 0; i < 8; i++) {
+	var note_type = i%2===0?"note":"mk";
+	var obj = {
+		note_type: note_type
+	};
+	search_test_data.push(obj);
+}
 router.get('/home', function(req, res) {
     if (req.session.islogin) {
         res.locals.islogin = req.session.islogin;
@@ -25,9 +49,9 @@ router.get('/home', function(req, res) {
     res.render('home', {
         title: '首页',
         user: res.locals.islogin,        
-        side_test_data: side_test_data
+        side_data: side_test_data,
+        search_data: search_test_data
     });
-    console.log(side_test_data);
 });
 
 /* GET home page. */
@@ -40,8 +64,9 @@ router.get('/', function(req, res) {
     }
     res.render('index', {
         title: '首页',
-        user: res.locals.islogin,
-        side_test_data: side_test_data
+        user: res.locals.islogin,       
+        side_data: side_test_data,
+        search_data: search_test_data
     });
 });
 router.route('/login').get(function(req, res) {
@@ -59,7 +84,7 @@ router.route('/login').get(function(req, res) {
 }).post(function(req, res) {
     client = userCon.connect();
     result = null;
-    userCon.selectFun(client, req.body.username, function(result) {
+    userCon.userSelect(client, req.body.username, function(result) {
         if (result[0] === undefined) {
             res.send('没有该用户');
         } else {
@@ -83,17 +108,23 @@ router.get('/logout', function(req, res) {
     res.redirect('/');
 });
 
-
 router.route('/reg').get(function(req, res) {
     res.render('reg', {
         title: '注册'
     });
 }).post(function(req, res) {
     client = userCon.connect();
-    userCon.insertFun(client, req.body.username, req.body.password, function(err) {
+    var user_name = req.body.username,
+        user_password = req.body.password,
+        user_id = uuidV4();
+    userCon.userInsert(client,
+     user_name, 
+     user_password, 
+     user_id, 
+     function(err) {
         if (err) throw err;
         if(!err){
-            req.session.islogin = req.body.username;
+            req.session.islogin = user_name;
             res.locals.islogin = req.session.islogin;
             res.cookie('islogin', res.locals.islogin, {
                 maxAge: 60000
@@ -121,13 +152,41 @@ router.route('/regMsg').get(function(req, res){
 });
 
 
+var side_bar_item_temp = require("../views/sideItemTemp.ejs");
 
-var side_bar_temp = require("../views/sideBar.ejs");
+router.post("/newFolder",function(req, res, next){
+	var item_data = {
+		note_name: "新建文件夹"
+	};
 
-var side_bar_html = side_bar_temp({
-            side_test_data:side_test_data
-        }
-    );
-// console.log(side_bar_html);
+	var item_html = side_bar_item_temp({
+		item: item_data
+	});
+	res.send({
+		msg:"folder inited success",
+		dom_data: item_html
+	});
+
+
+});
+
+var search_bar_item_temp = require("../views/searchItemTemp.ejs");
+
+router.post("/newNote", function(req, res, next){
+	
+
+	var item_data = {
+		note_type: req.body.type
+	};
+	var item_html = search_bar_item_temp({
+		item: item_data
+	});
+	
+	res.send({
+		msg: "note inited success",
+		dom_data: item_html
+	});
+
+});
 
 module.exports = router;

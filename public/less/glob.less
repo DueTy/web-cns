@@ -109,6 +109,8 @@ article{
     }
 }
 .new-btn{
+    font-size: 14px;
+    margin-left: 40px;
     .due-if{
         font-size: 12px;
     }
@@ -128,18 +130,27 @@ article{
     .side-bar-item{
         line-height: 25px;
         position: relative;
-        padding: 5px 0 8px 30px;
+        padding: 5px 0 0 30px;
         text-decoration: none;
-        display: block;
-            &:hover{
-            background-color: #e4edf8;
-        }
+        display: block;        
         .btn-text{
             color: #737373;
         }
     }   
+    .item-cont{
+        &:hover{
+            background-color: #e4edf8;
+        }
+    }
     .btn-text{
+        display: inline-block;
         margin-left: 30px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 80px;
+        height: 20px;
+        line-height: 24px;
     } 
     .due-if{
         font-size: 25px;
@@ -149,6 +160,19 @@ article{
         width: 25px;
         height: 25px;
         position: absolute;
+    }
+    .selected{
+        background-color: #398dee;
+        .btn-text{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #398dee;
+            .down-arr{
+                visibility: visible;
+                color: #fff;
+            }
+        }
     }
 }
 .newest{
@@ -166,12 +190,15 @@ article{
     overflow: auto;
     .folder-item{
         line-height: 25px;
-        padding-left: 40px;
-        &:hover{
-            .down-arr{
-                display: inline;
+        padding-left: 0;
+        .item-cont{
+            padding-left: 40px;
+            &:hover{
+                .down-arr{
+                    display: inline;
+                }
             }
-        }
+        }        
     }
     .due-if{
         color: #F5CD62;
@@ -184,6 +211,10 @@ article{
         right: 0;
         color: #737373;
         display: none;
+    }
+    .rename-cont{
+        position: absolute;
+        left: 0;
     }
 }
 .side-close,.side-open{
@@ -244,6 +275,10 @@ article{
     .item-title{
         padding-left: 25px;
         line-height: 20px;
+        height: 20px;
+        overflow: hidden;
+        white-space: nowrap;    
+        text-overflow: ellipsis;
     }
     .note-icon{
         color: #AED286;
@@ -264,7 +299,7 @@ article{
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
     }
-    .note-selected{
+    .selected{
         background-color: #e4edf8;
         &:hover{
             background-color: #e4edf8;
@@ -311,8 +346,40 @@ article{
 }
 .edit-bar{
     width: 65%;
+    position: relative;
     .note-title{
         font-size: 18px;
+    }
+    .name-cont{
+        border: 0;
+        outline: medium;
+        border-color: transparent;
+        font-size: 18px;
+        height: 30px;
+    }
+    .edit-top-opt{
+        width: 80px;
+        height: 30px;
+        line-height: 28px;
+        position: absolute;
+        top: 10px;
+        font-size: 11px;
+        color: #82B6F4;
+        text-align: center;
+        border-radius: 6px;
+        border: 1px solid #e2e2e2;
+        cursor: pointer;
+        background-color: #fff;
+        &:hover{
+            color: #398dee;
+            border: 1px solid #B9BBC5;
+        }
+    }
+    .save-btn{
+        right: 120px;
+    }
+    .share-btn{
+        right: 25px;
     }
 }
 .page-side-close{
@@ -337,8 +404,8 @@ article{
 }
 .mCSB_scrollTools{
     .mCSB_dragger{
-        left: 7px;
-        width: 26px;
+        left: 6px;
+        width: 27px;
         background: rgba(57, 141, 238, .3);
     }  
 }
@@ -350,4 +417,55 @@ article{
         top: 0;
         bottom: 0;
     }
+}
+.widget-menu{
+    position: absolute;
+    z-index: 100;
+    background: #ffffff;
+    color: #999;
+    min-width: 120px;
+    padding: 0px 0px;
+    border-radius: 2px;
+    box-shadow: 0px 1px 16px 0 rgba(90, 109, 122, 0.41);
+    cursor: default;
+    .widget-item{
+        padding: 5px 10px;
+        padding: 0 20px;
+        vertical-align: baseline;
+        line-height: 30px;
+        &:hover{
+            color: #76b0f3;
+            background: #f4f9ff;
+            cursor: pointer;
+        }
+    }
+}
+.page-mask{
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 99;
+    display: none;
+}
+.mask-show{
+    display: block;
+}
+.new-menu{
+    margin: -10px 0 0 10px;
+    display: none;
+}
+.folder-menu{
+    display: none;
+    top: 0;
+    margin-top: -50px;
+}
+.note-detail-menu{
+    display: none;
+    top: 0;
+    margin-top: -50px;
+}
+.new-menu-show,.folder-menu-show,.note-detail-menu-show{
+    display: block;
 }

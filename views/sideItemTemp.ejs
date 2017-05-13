@@ -1,0 +1,22 @@
+	
+<% paint(item) %>
+
+<% function paint(item){ %>
+<li class="folder-item cns-btn side-bar-item">
+	<div class="item-cont" style="padding-left:<%= (item.level-1)*10+40 %>px">
+		<span class="due-if">&#xe62e;</span>
+		<span class="btn-text"><%= item.folder_name %></span>
+		<span class="due-if down-arr">&#xe605;</span>
+	</div>
+	<% if (!item.sub_list){%>
+	<% return %>
+	<% }else{ %>
+	<ul class="sub-list">
+		<% item.sub_list.forEach(function(item){ %>
+		<% paint(item); %>
+		<% }) %>
+	</ul>
+	<% } %>		
+</li>
+
+<% } %>

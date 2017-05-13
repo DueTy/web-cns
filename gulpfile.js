@@ -1,94 +1,91 @@
-'use strict';
+"use strict";
 
 
 var views = "./views",
     pub = "./public";
 
-var gulp = require('gulp');
-var browserSync = require('browser-sync');
+var gulp = require("gulp");
+var browserSync = require("browser-sync");
 var reload = browserSync.reload;
 // 引入组件
-var jshint = require('gulp-jshint');
-var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
-var minifycss = require('gulp-minify-css');
-var rename = require('gulp-rename');
-var spritesmith = require('gulp.spritesmith');
-var imagemin = require('gulp-imagemin');
-var pngquant = require('imagemin-pngquant');
-var less = require('gulp-less');
-var del = require('del');
-var nodemon = require('gulp-nodemon');
-var sourcemaps = require('gulp-sourcemaps');
-var autoprefixer = require('gulp-autoprefixer');
-
-gulp.task('browser-sync', ['nodemon'], function() {
-    browserSync.init(null, {
-        proxy: 'http://localhost:3001',
-        files: ['public/**/*.*', 'views/**/*.*'],
-        notify: false,
-        port: 5000
-    });
-
-});
+var jshint = require("gulp-jshint");
+var concat = require("gulp-concat");
+var uglify = require("gulp-uglify");
+var minifycss = require("gulp-minify-css");
+var rename = require("gulp-rename");
+var spritesmith = require("gulp.spritesmith");
+var imagemin = require("gulp-imagemin");
+var pngquant = require("imagemin-pngquant");
+var less = require("gulp-less");
+var del = require("del");
+var nodemon = require("gulp-nodemon");
+//var sourcemaps = require("gulp-sourcemaps");
+var autoprefixer = require("gulp-autoprefixer");
+var livereload = require("gulp-livereload");
 
 
-gulp.task('nodemon', function(cb) {
-    del(['./public/*.ejs']);
+gulp.task("nodemon", ["livereload"], function(cb) {
+
+    var nodemon_config = {
+        script : "bin/www",
+        ignore: [
+            "/public/**/*.*",
+            "/views/**/*.*"
+        ],
+        env: {  
+            "NODE_ENV": "development"  
+        } 
+    };
 
     var called = false;
 
-    return nodemon({
-        script: 'bin/www'
-    }).on('start', function() {
-        if (!called) {
-            cb();
-            called = true;
-        }
-    });
+    return nodemon(nodemon_config);
 });
 //dev task end
 
 // 检查脚本
-gulp.task('lint', function() {
-    gulp.src([pub + '/scripts/*.plugin.js',pub + '/scripts/*.module.js'])
+gulp.task("lint", function() {
+    gulp.src([pub + "/scripts/*.plugin.js",pub + "/scripts/*.module.js"])
         .pipe(jshint())
-        .pipe(jshint.reporter('default'));
+        .pipe(jshint.reporter("default"));
 });
 
 // 合并，压缩js文件
-gulp.task('scripts', function() {
-    gulp.src(pub + '/scripts/*.js')
-        .pipe(concat('all.js'))
-        .pipe(gulp.dest(pub + '/dist/js/'))
-        .pipe(rename('all.min.js'))
+gulp.task("scripts", function() {
+    gulp.src(pub + "/scripts/*.js")
+        .pipe(concat("all.js"))
+        .pipe(gulp.dest(pub + "/dist/js/"))
+        .pipe(rename("all.min.js"))
         .pipe(uglify())
-        .pipe(gulp.dest(pub + '/dist/js/'));
+        .pipe(gulp.dest(pub + "/dist/js/"));
 });
 
 
 //合并、压缩路由
 gulp.task("routes",function(){
-    gulp.src(["./routes/header.js",'./routes/*.route.js',"./routes/footer.js"])
-        .pipe(concat('index_pre.js'))
-        .pipe(gulp.dest('./route/'))
-        .pipe(rename('index.js'))
+    gulp.src(["./routes/header.js",
+        "./routes/*.route.js",
+        "./routes/*.interface.js",
+        "./routes/footer.js"])
+        .pipe(concat("index_pre.js"))
+        .pipe(gulp.dest("./route/"))
+        .pipe(rename("index.js"))
         .pipe(uglify())
-        .pipe(gulp.dest('./route/'));
+        .pipe(gulp.dest("./route/"));
 });
 
 //精灵图生成
-gulp.task('sprite', function() {
-    var spriteData = gulp.src(pub + '/images/*.png').pipe(spritesmith({
-        imgName: 'sprite.png',
-        cssName: 'sprite.css'
+gulp.task("sprite", function() {
+    var spriteData = gulp.src(pub + "/images/*.png").pipe(spritesmith({
+        imgName: "sprite.png",
+        cssName: "sprite.css"
     }));
-    return spriteData.pipe(gulp.dest(pub + '/sprite/'));
+    return spriteData.pipe(gulp.dest(pub + "/sprite/"));
 });
 
 //图片深度压缩
-gulp.task('imagemin', function() {
-    gulp.src(pub + '/sprite/sprite.png')
+gulp.task("imagemin", function() {
+    gulp.src(pub + "/sprite/sprite.png")
         .pipe(imagemin({
             progressive: true,
             svgoPlugins: [{
@@ -96,65 +93,68 @@ gulp.task('imagemin', function() {
             }], //不要移除svg的viewbox属性
             use: [pngquant()] //使用pngquant深度压缩png图片的imagemin插件
         }))
-        .pipe(gulp.dest(pub + '/dist/css/'));
+        .pipe(gulp.dest(pub + "/dist/css/"));
 });
 
-gulp.task('less', function() {
-    gulp.src(pub + '/less/*.less')
+gulp.task("less", function() {
+    gulp.src(pub + "/less/*.less")
         .pipe(less())
-        .pipe(gulp.dest(pub + '/stylesheets/')); //将会在对应目录下生成.css文件
+        .pipe(gulp.dest(pub + "/stylesheets/")); //将会在对应目录下生成.css文件
 });
 
 //合并，压缩css文件
-gulp.task('minifycss', function() {
-    gulp.src([pub + '/sprite/sprite.css', pub + '/stylesheets/*.css'])
-        .pipe(concat('all.css'))
+gulp.task("minifycss", function() {
+    gulp.src([pub + "/sprite/sprite.css", pub + "/stylesheets/*.css"])
+        .pipe(concat("all.css"))
         .pipe(autoprefixer({
             browsers: ["last 3 version", "ie > 8", "Android >= 3", "Safari >= 5.1", "iOS >= 5"],
             cascade: true,
             remove:true
         }))
-        .pipe(gulp.dest(pub + '/dist/css/'))
-        .pipe(rename('all.min.css'))
+        .pipe(gulp.dest(pub + "/dist/css/"))
+        .pipe(rename("all.min.css"))
         .pipe(minifycss())
-        .pipe(gulp.dest(pub + '/dist/css/'));
+        .pipe(gulp.dest(pub + "/dist/css/"))
+        .pipe(livereload());
 });
-// 默认任务
-gulp.task('default', function() {
-    var allOptions = ['lint', 'scripts', 'minifycss', 'less', 'sprite', "routes",'browser-sync'];
-    gulp.run(allOptions);
 
+gulp.task("livereload",function(){
+    livereload.listen();
 
     // 监听文件变化
-    gulp.watch([views + '/*.html', pub + '/scripts/*.js', pub + '/less/*.less', pub + '/stylesheets/*.css',
-        pub + '/images/*.png', pub + '/sprite/*.png'
+    return gulp.watch([views + "/*.ejs", pub + "/scripts/*.js", pub + "/less/*.less", pub + "/stylesheets/*.css",
+        pub + "/images/*.png", pub + "/sprite/*.png", "./routes/*.js"
     ], function(e) {
+
+        livereload.changed(e.path);
+
         var fileType = e.path.substr(e.path.lastIndexOf(".")).toLowerCase();
         var filePath = e.path.split("\\");
+        var fd_type = filePath[filePath.length - 2];
 
         switch (fileType) {
-            case ".html":
-                gulp.run('minifycss');
+            case ".ejs":
+                gulp.run("minifycss");
                 break;
 
             case ".js":                    
-                gulp.run('lint',filePath[filePath.length - 2]);
+                gulp.run("lint",fd_type);
                 break;
 
             case ".less":
-                gulp.run('less');
+                gulp.run("less");
                 break;
 
             case ".css":
-                gulp.run('minifycss');
+                gulp.run("minifycss");
                 break;
 
             case ".png":
-                if (filePath[filePath.length - 2] === 'images') {
-                    gulp.run('sprite');
+                if (fd_type === "images") {
+                    gulp.run("sprite");
                 };
-                if (filePath[filePath.length - 2] === 'sprite') {
-                    gulp.run('imagemin');
+                if (fd_type === "sprite") {
+                    gulp.run("imagemin");
                 };
                 break;
             default:
@@ -162,4 +162,9 @@ gulp.task('default', function() {
                 break;
         }
     });
+});
+// 默认任务
+gulp.task("default", function() {
+    var all_options = ["lint", "scripts", "minifycss", "less", "sprite", "routes","nodemon"];
+    gulp.run(all_options);    
 });

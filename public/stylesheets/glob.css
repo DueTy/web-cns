@@ -106,6 +106,10 @@ article {
   color: #398dee;
   font-size: 20px;
 }
+.new-btn {
+  font-size: 14px;
+  margin-left: 40px;
+}
 .new-btn .due-if {
   font-size: 12px;
 }
@@ -124,18 +128,25 @@ article {
 .side-bar-main .side-bar-item {
   line-height: 25px;
   position: relative;
-  padding: 5px 0 8px 30px;
+  padding: 5px 0 0 30px;
   text-decoration: none;
   display: block;
-}
-.side-bar-main .side-bar-item:hover {
-  background-color: #e4edf8;
 }
 .side-bar-main .side-bar-item .btn-text {
   color: #737373;
 }
+.side-bar-main .item-cont:hover {
+  background-color: #e4edf8;
+}
 .side-bar-main .btn-text {
+  display: inline-block;
   margin-left: 30px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 80px;
+  height: 20px;
+  line-height: 24px;
 }
 .side-bar-main .due-if {
   font-size: 25px;
@@ -145,6 +156,19 @@ article {
   width: 25px;
   height: 25px;
   position: absolute;
+}
+.side-bar-main .selected {
+  background-color: #398dee;
+}
+.side-bar-main .selected .btn-text {
+  color: #fff;
+}
+.side-bar-main .selected:hover {
+  background-color: #398dee;
+}
+.side-bar-main .selected:hover .down-arr {
+  visibility: visible;
+  color: #fff;
 }
 .newest .due-if {
   top: 2px;
@@ -158,9 +182,12 @@ article {
 }
 .folder-item-list .folder-item {
   line-height: 25px;
+  padding-left: 0;
+}
+.folder-item-list .folder-item .item-cont {
   padding-left: 40px;
 }
-.folder-item-list .folder-item:hover .down-arr {
+.folder-item-list .folder-item .item-cont:hover .down-arr {
   display: inline;
 }
 .folder-item-list .due-if {
@@ -174,6 +201,10 @@ article {
   right: 0;
   color: #737373;
   display: none;
+}
+.folder-item-list .rename-cont {
+  position: absolute;
+  left: 0;
 }
 .side-close,
 .side-open {
@@ -235,6 +266,10 @@ article {
 .search-bar-main .item-title {
   padding-left: 25px;
   line-height: 20px;
+  height: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .search-bar-main .note-icon {
   color: #AED286;
@@ -255,10 +290,10 @@ article {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
-.search-bar-main .note-selected {
+.search-bar-main .selected {
   background-color: #e4edf8;
 }
-.search-bar-main .note-selected:hover {
+.search-bar-main .selected:hover {
   background-color: #e4edf8;
 }
 .search-bar-main .note-msg {
@@ -301,9 +336,41 @@ article {
 }
 .edit-bar {
   width: 65%;
+  position: relative;
 }
 .edit-bar .note-title {
   font-size: 18px;
+}
+.edit-bar .name-cont {
+  border: 0;
+  outline: medium;
+  border-color: transparent;
+  font-size: 18px;
+  height: 30px;
+}
+.edit-bar .edit-top-opt {
+  width: 80px;
+  height: 30px;
+  line-height: 28px;
+  position: absolute;
+  top: 10px;
+  font-size: 11px;
+  color: #82B6F4;
+  text-align: center;
+  border-radius: 6px;
+  border: 1px solid #e2e2e2;
+  cursor: pointer;
+  background-color: #fff;
+}
+.edit-bar .edit-top-opt:hover {
+  color: #398dee;
+  border: 1px solid #B9BBC5;
+}
+.edit-bar .save-btn {
+  right: 120px;
+}
+.edit-bar .share-btn {
+  right: 25px;
 }
 .page-side-close .side-bar {
   width: 0;
@@ -324,8 +391,8 @@ article {
   visibility: hidden;
 }
 .mCSB_scrollTools .mCSB_dragger {
-  left: 7px;
-  width: 26px;
+  left: 6px;
+  width: 27px;
   background: rgba(57, 141, 238, 0.3);
 }
 .edit-cont {
@@ -336,4 +403,57 @@ article {
   position: absolute;
   top: 0;
   bottom: 0;
+}
+.widget-menu {
+  position: absolute;
+  z-index: 100;
+  background: #ffffff;
+  color: #999;
+  min-width: 120px;
+  padding: 0px 0px;
+  border-radius: 2px;
+  box-shadow: 0px 1px 16px 0 rgba(90, 109, 122, 0.41);
+  cursor: default;
+}
+.widget-menu .widget-item {
+  padding: 5px 10px;
+  padding: 0 20px;
+  vertical-align: baseline;
+  line-height: 30px;
+}
+.widget-menu .widget-item:hover {
+  color: #76b0f3;
+  background: #f4f9ff;
+  cursor: pointer;
+}
+.page-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 99;
+  display: none;
+}
+.mask-show {
+  display: block;
+}
+.new-menu {
+  margin: -10px 0 0 10px;
+  display: none;
+}
+.folder-menu {
+  display: none;
+  top: 0;
+  margin-top: -50px;
+}
+.note-detail-menu {
+  display: none;
+  top: 0;
+  margin-top: -50px;
+}
+.new-menu-show,
+.folder-menu-show,
+.note-detail-menu-show {
+  display: block;
 }

@@ -6,8 +6,8 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 body
 {
 	/* Font */
-	font-family: sans-serif, Arial, Verdana, "Trebuchet MS";
-	font-size: 12px;
+	font-family: "microsoft yahei",sans-serif, Arial, Verdana, "Trebuchet MS";
+	font-size: 14px;
 
 	/* Text color */
 	color: #333;
@@ -20,8 +20,8 @@ body
 
 .cke_editable
 {
-	font-size: 13px;
-	line-height: 1.6;
+	font-size: 14px;
+	line-height: 1;
 
 	/* Fix for missing scrollbars with RTL texts. (#10488) */
 	word-wrap: break-word;
@@ -206,3 +206,25 @@ a > img {
 	max-height: 1080px;
 	margin:0 auto;
 }
+table {  
+    font-family: verdana,arial,sans-serif;  
+    font-size:11px;  
+    color:#333333;  
+    border-width: 1px;  
+    border-color: #666666;  
+    border-collapse: collapse;  
+}  
+table th {  
+    border-width: 1px;  
+    padding: 8px;  
+    border-style: solid;  
+    border-color: #666666;  
+    background-color: #dedede;  
+}  
+table td {  
+    border-width: 1px;  
+    padding: 8px;  
+    border-style: solid;  
+    border-color: #666666;  
+    background-color: #ffffff;  
+}  

@@ -5,31 +5,40 @@
 			<span class="due-if">&#xe628;</span>
 			新建
 		</span>
+		<ul class="widget-menu new-menu">
+			<li class="widget-item new-folder">文件夹</li>
+			<li class="widget-item new-note">笔记</li>
+			<li class="widget-item new-mk">markdown</li>
+		</ul>
 	</div>
 	<div class="side-bar-main">
 		<ul class="side-bar-list">
 			<li class="newest cns-btn ">
-				<a class="cns-btn side-bar-item">
+				<div class="item-cont">
+					<a class="cns-btn side-bar-item">
 					<span class="due-if">&#xe65a;</span><span class="newest-btn btn-text">最新</span>
-				</a>				
+					</a>
+				</div>
+								
 			</li>
 			<li class="newest cns-btn ">
-				<a class="cns-btn side-bar-item">
-					<span class="due-if">&#xe627;</span><span class="newest-btn btn-text">分享</span>
-				</a>				
+				<div class="item-cont">
+					<a class="cns-btn side-bar-item">
+						<span class="due-if">&#xe627;</span><span class="newest-btn btn-text">分享</span>
+					</a>	
+				</div>
+							
 			</li>
 			<li class="my-folders">
-				<a class="cns-btn list-title side-bar-item">
-					<span class="due-if">&#xe8ea;</span>
-					<span class="newest-btn btn-text">我的文件夹</span>
-				</a>
+				<div class="item-cont">
+					<a class="cns-btn list-title side-bar-item">
+						<span class="due-if">&#xe8ea;</span><span class="newest-btn btn-text">我的文件夹</span>
+					</a>
+				</div>
+				
 				<ul class="folder-item-list">
-					<% side_test_data.forEach(function(item){ %>
-					<li class="folder-item cns-btn side-bar-item">
-						<span class="due-if">&#xe62e;</span>
-						<span class="btn-text"><%= item %></span>
-						<span class="due-if down-arr">&#xe605;</span>
-					</li>
+					<% side_data.forEach(function(item){ %>
+					<%- include sideItemTemp %>
 					<%	}) %>
 				</ul>
 			</li>
