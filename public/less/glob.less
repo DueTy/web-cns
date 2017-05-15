@@ -92,10 +92,6 @@ article{
 }
 .cns-btn{
     cursor: pointer;
-    transition: color .2s;
-    &:hover{
-        color: #398dee;
-    }
 }
 .side-bar{
     position: relative;
@@ -144,11 +140,10 @@ article{
     }
     .btn-text{
         display: inline-block;
-        margin-left: 30px;
+        margin: 1px 0 0 45px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        width: 80px;
         height: 20px;
         line-height: 24px;
     } 
@@ -181,11 +176,6 @@ article{
         margin-left: -2px;
     }
 }
-.my-folders{
-    .due-if{
-        font-size: 22px;
-    }
-}
 .folder-item-list{
     overflow: auto;
     .folder-item{
@@ -200,12 +190,30 @@ article{
             }
         }        
     }
-    .due-if{
+    .sub-list{
+        display: none;
+    }
+    .list-open{
+        display: block;
+    }
+    .has-sub-open{
+        display: none;
+        position: absolute;
+        cursor: pointer;
+        .folder-icon{
+            margin-top: 0px;
+            font-size: 21px;
+        }
+    }
+    .folder-icon{
         color: #F5CD62;
         font-size: 20px;
+        margin: 2px 0 0 15px;
+    }
+    .arr-icon{
+        font-size: 14px;
     }
     .down-arr{
-        color: #000;
         font-size: 14px;
         position: absolute;
         right: 0;
@@ -214,7 +222,18 @@ article{
     }
     .rename-cont{
         position: absolute;
-        left: 0;
+        left: 0px;
+        height: 25px;
+        margin-top: 1px;
+        display: none;
+    }
+    .folder-open{
+        .has-sub{
+            display: none;
+        }
+        .has-sub-open{
+            display: inline-block;
+        }
     }
 }
 .side-close,.side-open{

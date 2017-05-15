@@ -3,12 +3,24 @@
 
 <% function paint(item){ %>
 <li class="folder-item cns-btn side-bar-item">
-	<div class="item-cont" style="padding-left:<%= (item.level-1)*10+40 %>px">
-		<span class="due-if">&#xe62e;</span>
-		<span class="btn-text"><%= item.folder_name %></span>
-		<span class="due-if down-arr">&#xe605;</span>
+	<div class="item-cont" data-folder-id="<%= item.folder_id %>" style="padding-left:<%= (item.level-1)*10+30 %>px">
+		<span class="has-sub">
+		<% if(item.sub_list && item.sub_list.length){ %>
+			<i class="due-if arr-icon">&#xe637;</i>
+		<% } %>
+			<i class="due-if folder-icon">&#xe62e;</i>
+		</span>
+		<% if(item.sub_list && item.sub_list.length){ %>
+		<span class="has-sub-open">
+			<i class="due-if arr-icon">&#xe636;</i>
+			<i class="due-if folder-icon">&#xe633;</i>
+		</span>
+		<% } %>
+		<span class="btn-text" style="width:<%= 80-(item.level-1)*10 %>px;"><%= item.folder_name %></span>
+		<i class="due-if down-arr">&#xe605;</i>
+		<input class="rename-cont" type="text" style="width:<%= 110-(item.level-1)*10 %>px;margin-left:<%= (item.level-1)*10+55 %>px" value="<%= item.folder_name %>">	
 	</div>
-	<% if (!item.sub_list){%>
+	<% if (!item.sub_list || !item.sub_list.length){%>
 	<% return %>
 	<% }else{ %>
 	<ul class="sub-list">

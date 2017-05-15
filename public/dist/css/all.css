@@ -91,11 +91,6 @@ article {
 }
 .cns-btn {
   cursor: pointer;
-  -webkit-transition: color .2s;
-  transition: color .2s;
-}
-.cns-btn:hover {
-  color: #398dee;
 }
 .side-bar {
   position: relative;
@@ -142,11 +137,10 @@ article {
 }
 .side-bar-main .btn-text {
   display: inline-block;
-  margin-left: 30px;
+  margin: 1px 0 0 45px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 80px;
   height: 20px;
   line-height: 24px;
 }
@@ -176,9 +170,6 @@ article {
   top: 2px;
   margin-left: -2px;
 }
-.my-folders .due-if {
-  font-size: 22px;
-}
 .folder-item-list {
   overflow: auto;
 }
@@ -192,12 +183,30 @@ article {
 .folder-item-list .folder-item .item-cont:hover .down-arr {
   display: inline;
 }
-.folder-item-list .due-if {
+.folder-item-list .sub-list {
+  display: none;
+}
+.folder-item-list .list-open {
+  display: block;
+}
+.folder-item-list .has-sub-open {
+  display: none;
+  position: absolute;
+  cursor: pointer;
+}
+.folder-item-list .has-sub-open .folder-icon {
+  margin-top: 0px;
+  font-size: 21px;
+}
+.folder-item-list .folder-icon {
   color: #F5CD62;
   font-size: 20px;
+  margin: 2px 0 0 15px;
+}
+.folder-item-list .arr-icon {
+  font-size: 14px;
 }
 .folder-item-list .down-arr {
-  color: #000;
   font-size: 14px;
   position: absolute;
   right: 0;
@@ -206,7 +215,16 @@ article {
 }
 .folder-item-list .rename-cont {
   position: absolute;
-  left: 0;
+  left: 0px;
+  height: 25px;
+  margin-top: 1px;
+  display: none;
+}
+.folder-item-list .folder-open .has-sub {
+  display: none;
+}
+.folder-item-list .folder-open .has-sub-open {
+  display: inline-block;
 }
 .side-close,
 .side-open {

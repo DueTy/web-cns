@@ -85,7 +85,7 @@ gulp.task("sprite", function() {
 
 //图片深度压缩
 gulp.task("imagemin", function() {
-    gulp.src(pub + "/sprite/sprite.png")
+    gulp.src(pub + "/imgs/*.png")
         .pipe(imagemin({
             progressive: true,
             svgoPlugins: [{
@@ -93,18 +93,13 @@ gulp.task("imagemin", function() {
             }], //不要移除svg的viewbox属性
             use: [pngquant()] //使用pngquant深度压缩png图片的imagemin插件
         }))
-        .pipe(gulp.dest(pub + "/dist/css/"));
+        .pipe(gulp.dest(pub + "/dist/imagemin/"));
 });
 
-gulp.task("less", function() {
+gulp.task("styleCompile", function() {
     gulp.src(pub + "/less/*.less")
         .pipe(less())
-        .pipe(gulp.dest(pub + "/stylesheets/")); //将会在对应目录下生成.css文件
-});
-
-//合并，压缩css文件
-gulp.task("minifycss", function() {
-    gulp.src([pub + "/sprite/sprite.css", pub + "/stylesheets/*.css"])
+        .pipe(gulp.dest(pub + "/stylesheets/")) //将会在对应目录下生成.css文件
         .pipe(concat("all.css"))
         .pipe(autoprefixer({
             browsers: ["last 3 version", "ie > 8", "Android >= 3", "Safari >= 5.1", "iOS >= 5"],
@@ -114,8 +109,7 @@ gulp.task("minifycss", function() {
         .pipe(gulp.dest(pub + "/dist/css/"))
         .pipe(rename("all.min.css"))
         .pipe(minifycss())
-        .pipe(gulp.dest(pub + "/dist/css/"))
-        .pipe(livereload());
+        .pipe(gulp.dest(pub + "/dist/css/"));
 });
 
 gulp.task("livereload",function(){
@@ -134,7 +128,7 @@ gulp.task("livereload",function(){
 
         switch (fileType) {
             case ".ejs":
-                gulp.run("minifycss");
+                gulp.run("styleCompile");
                 break;
 
             case ".js":                    
@@ -142,18 +136,11 @@ gulp.task("livereload",function(){
                 break;
 
             case ".less":
-                gulp.run("less");
-                break;
-
-            case ".css":
-                gulp.run("minifycss");
+                gulp.run("styleCompile");
                 break;
 
             case ".png":
-                if (fd_type === "images") {
-                    gulp.run("sprite");
-                };
-                if (fd_type === "sprite") {
+                if (fd_type === "imgs") {
                     gulp.run("imagemin");
                 };
                 break;
@@ -165,6 +152,6 @@ gulp.task("livereload",function(){
 });
 // 默认任务
 gulp.task("default", function() {
-    var all_options = ["lint", "scripts", "minifycss", "less", "sprite", "routes","nodemon"];
+    var all_options = ["lint", "scripts", "styleCompile", "routes","nodemon"];
     gulp.run(all_options);    
 });

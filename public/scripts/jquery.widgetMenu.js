@@ -14,7 +14,8 @@ define("widgetMenu",function(require,exports,module){
 				trigger: "",
 				parent: "body",
 				show_class: "",
-				flo_mouse: false//默认为不跟随鼠标事件
+				flo_mouse: false,//默认为不跟随鼠标事件
+				call: function(){}
 			};
 			var settings = $.extend(defaults,opts);
 			var _this = $(this),
@@ -24,7 +25,8 @@ define("widgetMenu",function(require,exports,module){
 				_show_class = settings.show_class,
 				_mask = $(".page-mask"),
 				_mask_show_class = "mask-show",
-				_this_height = $(this).height();
+				_this_height = $(this).height(),
+				_call_back = settings.call;
 
 
 			_trigger.on(_ck_type, addClass2Menu);	
@@ -32,6 +34,8 @@ define("widgetMenu",function(require,exports,module){
 			_this.on("click", maskClick);
 			
 			_mask.on("click contextmenu", maskClick);
+
+			_call_back();
 			
 
 

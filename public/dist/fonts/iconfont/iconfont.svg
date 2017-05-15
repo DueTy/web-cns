@@ -2,7 +2,7 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
 <svg xmlns="http://www.w3.org/2000/svg">
 <metadata>
-Created by FontForge 20120731 at Thu May 11 16:37:15 2017
+Created by FontForge 20120731 at Sun May 14 16:34:46 2017
  By admin
 </metadata>
 <defs>
@@ -64,6 +64,10 @@ t-8.5 41t-23.5 34.5q-14 14 -33.5 22.5t-41.5 8.5t-41.5 -8.5t-33.5 -23.5q-15 -14 -
 d="M777 550l-265 -266l-265 266q-9 10 -22.5 10t-23 -9.5t-9.5 -23t9 -22.5l287 -288q9 -9 24 -9q15 -1 24 9l287 288q9 9 9 22.5t-9.5 23t-23 9.5t-22.5 -10z" />
     <glyph glyph-name="liucheng" unicode="&#xe62e;" 
 d="M512 640h9h117h138h117q24 0 41 -12.5t23 -33.5q2 -9 2 -20v-509q0 -28 -18.5 -46.5t-46.5 -18.5h-763q-29 0 -47.5 18.5t-18.5 47.5v636q0 29 18.5 47.5t47.5 18.5h314q30 0 48.5 -18.5t18.5 -47.5v-55v-7zM129 640h319v64h-319v-64z" />
+    <glyph glyph-name="xiajiantoushixinxiao" unicode="&#xe636;" 
+d="M505 227l-295 296h589z" />
+    <glyph glyph-name="youjiantoushixinxiao" unicode="&#xe637;" 
+d="M669 377l-296 -295v589z" />
     <glyph glyph-name="xinjian" unicode="&#xe628;" 
 d="M819 179v205h-51v-205h-205v-51h205v-205h51v205h205v51h-205zM51 896h871v-51h-871v51zM870 845h52v-256h-52v256zM51 845h51v-973h-51v973zM102 -77h359v-51h-359v51z" />
     <glyph glyph-name="wenjianjia" unicode="&#xe8ea;" 

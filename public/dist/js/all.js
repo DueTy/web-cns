@@ -122,7 +122,8 @@ define(function(require){
  		trigger: ".folder-item",
  		show_class: "folder-menu-show",
  		is_left: false,
- 		flo_mouse: true
+ 		flo_mouse: true,
+ 		call: folderRename
  	});
  	$(".folder-menu").widgetMenu({
  		trigger: ".folder-item .down-arr",
@@ -134,6 +135,12 @@ define(function(require){
  		show_class: "note-detail-menu-show",
  		is_left: false,
  		flo_mouse: true
+ 	});
+ 	$(".arr-icon").on("click", function() {
+ 		var par_folder = $(this).parents(".item-cont")
+ 		var sub_list = par_folder.next(".sub-list");
+ 		par_folder.toggleClass("folder-open");
+ 		sub_list.toggleClass("list-open");
  	});
 
 
@@ -161,6 +168,9 @@ define(function(require){
 			// CKEDITOR.instances.editor.setData("<p>听，海哭的声音。。。</p>");
 			console.log(CKEDITOR.instances.editor.getData());
 		});
+	}
+	function folderRename(){
+		console.log("hahha");
 	}
 });
 
@@ -1198,7 +1208,8 @@ define("widgetMenu",function(require,exports,module){
 				trigger: "",
 				parent: "body",
 				show_class: "",
-				flo_mouse: false//默认为不跟随鼠标事件
+				flo_mouse: false,//默认为不跟随鼠标事件
+				call: function(){}
 			};
 			var settings = $.extend(defaults,opts);
 			var _this = $(this),
@@ -1208,7 +1219,8 @@ define("widgetMenu",function(require,exports,module){
 				_show_class = settings.show_class,
 				_mask = $(".page-mask"),
 				_mask_show_class = "mask-show",
-				_this_height = $(this).height();
+				_this_height = $(this).height(),
+				_call_back = settings.call;
 
 
 			_trigger.on(_ck_type, addClass2Menu);	
@@ -1216,6 +1228,8 @@ define("widgetMenu",function(require,exports,module){
 			_this.on("click", maskClick);
 			
 			_mask.on("click contextmenu", maskClick);
+
+			_call_back();
 			
 
 

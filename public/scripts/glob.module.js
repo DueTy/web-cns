@@ -78,7 +78,8 @@ define(function(require){
  		trigger: ".folder-item",
  		show_class: "folder-menu-show",
  		is_left: false,
- 		flo_mouse: true
+ 		flo_mouse: true,
+ 		call: folderRename
  	});
  	$(".folder-menu").widgetMenu({
  		trigger: ".folder-item .down-arr",
@@ -90,6 +91,12 @@ define(function(require){
  		show_class: "note-detail-menu-show",
  		is_left: false,
  		flo_mouse: true
+ 	});
+ 	$(".arr-icon").on("click", function() {
+ 		var par_folder = $(this).parents(".item-cont")
+ 		var sub_list = par_folder.next(".sub-list");
+ 		par_folder.toggleClass("folder-open");
+ 		sub_list.toggleClass("list-open");
  	});
 
 
@@ -117,5 +124,8 @@ define(function(require){
 			// CKEDITOR.instances.editor.setData("<p>听，海哭的声音。。。</p>");
 			console.log(CKEDITOR.instances.editor.getData());
 		});
+	}
+	function folderRename(){
+		console.log("hahha");
 	}
 });
