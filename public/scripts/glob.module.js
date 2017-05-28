@@ -79,7 +79,7 @@ define(function(require){
  		show_class: "folder-menu-show",
  		is_left: false,
  		flo_mouse: true,
- 		call: folderRename
+ 		call: folderRenameCall
  	});
  	$(".folder-menu").widgetMenu({
  		trigger: ".folder-item .down-arr",
@@ -125,7 +125,7 @@ define(function(require){
 			console.log(CKEDITOR.instances.editor.getData());
 		});
 	}
-	function folderRename(){
-		console.log("hahha");
+	function folderRenameCall(obj){
+		console.log(obj.html());
 	}
 });

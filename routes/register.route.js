@@ -35,10 +35,9 @@ router.route('/regMsg').get(function(req, res){
     if (req.cookies.islogin) {
         req.session.islogin = req.cookies.islogin;
     }
-    var html = res.render('reg_msg', {
+    var html = res.render('regMsg', {
         msg: '注册成功',
         user: res.locals.islogin
     });
-    // console.log(html);
 });
 

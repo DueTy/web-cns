@@ -34,8 +34,6 @@ define("widgetMenu",function(require,exports,module){
 			_this.on("click", maskClick);
 			
 			_mask.on("click contextmenu", maskClick);
-
-			_call_back();
 			
 
 
@@ -45,6 +43,7 @@ define("widgetMenu",function(require,exports,module){
 				var style_obj = _flo_mouse?setCoordinate(e):{};
 				_this.addClass(_show_class).css(style_obj);
 				_mask.addClass(_mask_show_class);
+				_call_back(_trigger);
 				return false;
 			}
 

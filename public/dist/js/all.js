@@ -123,7 +123,7 @@ define(function(require){
  		show_class: "folder-menu-show",
  		is_left: false,
  		flo_mouse: true,
- 		call: folderRename
+ 		call: folderRenameCall
  	});
  	$(".folder-menu").widgetMenu({
  		trigger: ".folder-item .down-arr",
@@ -169,8 +169,8 @@ define(function(require){
 			console.log(CKEDITOR.instances.editor.getData());
 		});
 	}
-	function folderRename(){
-		console.log("hahha");
+	function folderRenameCall(obj){
+		console.log(obj.html());
 	}
 });
 
@@ -1228,8 +1228,6 @@ define("widgetMenu",function(require,exports,module){
 			_this.on("click", maskClick);
 			
 			_mask.on("click contextmenu", maskClick);
-
-			_call_back();
 			
 
 
@@ -1239,6 +1237,7 @@ define("widgetMenu",function(require,exports,module){
 				var style_obj = _flo_mouse?setCoordinate(e):{};
 				_this.addClass(_show_class).css(style_obj);
 				_mask.addClass(_mask_show_class);
+				_call_back(_trigger);
 				return false;
 			}
 
