@@ -74,6 +74,9 @@ define(function(require){
 	};
 	view_list.mCustomScrollbar(scroll_opts);
 	folder_item_list.mCustomScrollbar(scroll_opts);
+
+	var folder_item_list = $(".folder-item-list"),
+		view_list = $(".view-list");
 	
 	require("newNote");
 	require("newFolder");
@@ -134,21 +137,22 @@ define(function(require){
  		tri_par: ".folder-item-list",
  		is_left: false,
  		flo_mouse: true,
- 		call: folderMenuCall
+ 		call: renameCall
  	});
  	$(".folder-menu").widgetMenu({
  		trigger: ".folder-item .down-arr",
  		tri_par: ".folder-item-list",
 		show_class: "blk-show",
  		flo_mouse: true,
- 		call: folderMenuCall
+ 		call: renameCall
  	});
  	$(".note-detail-menu").widgetMenu({
- 		trigger: ".view-item",
+ 		trigger: ".item-cont",
 		show_class: "blk-show",
  		tri_par: ".view-list",
  		is_left: false,
- 		flo_mouse: true
+ 		flo_mouse: true,
+ 		call: renameCall
  	});
 
  	folder_item_list.on("click",".arr-icon", function() {
@@ -156,6 +160,41 @@ define(function(require){
  		var sub_list = par_folder.next(".sub-list");
  		par_folder.toggleClass("folder-open");
  		sub_list.toggleClass("list-open");
+ 	});
+
+ 	folder_item_list.on("click", ".item-cont", function() {
+ 		var post_data = {},
+ 			_this = $(this),
+ 			folder_id = _this.attr("data-entity-id");
+
+ 		post_data.folder_id = folder_id;
+
+ 		$.ajax({
+ 			url: "/getNoteList",
+ 			type: "POST",
+ 			dataType: "JSON",
+ 			data: post_data,
+ 			success:function(data){
+ 				var list_dom = "";
+ 				if (data) {
+ 					list_dom = data.list_dom;
+ 					var list_container = view_list.find(".mCSB_container");
+ 					list_container.html("");
+ 					list_container.append(list_dom);
+ 					view_list.mCustomScrollbar("update");
+ 				}
+ 				view_list.mCustomScrollbar("scrollTo","top");
+ 			}
+ 		});	
+ 		folder_item_list.find(".item-cont").removeClass("selected");
+ 		_this.addClass("selected");
+ 	});
+
+ 	view_list.on("click", ".item-cont", function() {
+ 		var post_data = {},
+ 			_this = $(this),
+ 			note_id = _this.attr("data-entity-id");
+ 		
  	});
 
 
@@ -181,16 +220,14 @@ define(function(require){
 			console.log(CKEDITOR.instances.editor.getData());
 		});
 	}
-	function folderMenuCall(menu){
-		var rename_btn = menu.find(".rename"),
-			new_folder = menu.find(".new-folder");
+	function renameCall(menu){
+		var rename_btn = menu.find(".rename");
 
 		rename_btn.on("click", function() {
 			var target_id = menu.attr("data-target-id");
 			var target = $("div[data-entity-id="+target_id+"]");
 			target.find(".rename-cont").renameWidget();
 		});
-
 	}
 });
 
@@ -1412,40 +1449,57 @@ define("newNote",function(require,exports,module){
 		folder_menu = $(".folder-menu"),
 		folder_new_note = folder_menu.find(".new-note"),
 		folder_new_mk = folder_menu.find(".new-mk"),
+		folder_item_list = $(".folder-item-list"),
 		view_list = $(".view-list"),
 		list_container = view_list.find(".mCSB_container");
 
-	root_new_note.on("click", addAndPost);
-	root_new_mk.on("click", addAndPost);
+	root_new_note.on("click", newNote);
 
-	function rootAjax(){
+	root_new_mk.on("click", newNote);
+
+	folder_new_note.on("click", newNote);
+
+	folder_new_mk.on("click", newNote);
+
+	function newNote(){
 		var _this = $(this),
-			_type = "";
-		
-		_type = _this.hasClass("new-note")?"note":"mk";
+			new_note_type = "",
+			par_menu = _this.parents(".widget-menu"),
+			is_new_menu = par_menu.hasClass("new-menu")?true:false;
+
+		var menu_target_id = is_new_menu?"":par_menu.attr("data-target-id");
+
+		new_note_type = _this.hasClass("new-note")?"note":"mk";
 
 		var post_data = {
 			is_new: true,
-			type: _type
+			type: new_note_type
 		};
 		$.ajax({
 			url: "/newNote",
 			type: "POST",
 			dataType: "JSON",
 			data: post_data,
-			success:function(data){
-				var dom_data = "";
-				if(data){
-					dom_data = data.dom_data;
-					list_container.prepend(dom_data);
-				}
+			success: function(data){
+				is_new_menu?rootAjaxSuc(data):folderAjaxSuc(menu_target_id);
 			}
 		});	
 	}
 
-	function folderAjax(){
-		
+	function rootAjaxSuc(data){
+		var dom_data = "";
+		if(data){
+			dom_data = data.dom_data;
+			list_container.prepend(dom_data);
+		}
 	}
+
+	function folderAjaxSuc(folder_id){
+		folder_item_list
+		.find("div[data-entity-id="+folder_id+"]")
+		.trigger("click");
+	}
+
 });
 define("renameWidget",function(require,exports,module){
 	"use strict";

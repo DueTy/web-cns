@@ -1,20 +1,22 @@
 <li class="view-item">
-	<p class="item-title">
-		<% if(item.note_type){ %>
+	<div class="item-cont" data-entity-id="<%= item.note_id %>">
+		<p class="item-title">
+			<% if(item.note_type){ %>
 			<% if(item.note_type === "mk"){ %>
-		<span class="due-if mk-icon">&#xe66c;</span>	
+			<span class="due-if mk-icon">&#xe66c;</span>	
 			<% }else{ %>
-		<span class="due-if note-icon">&#xe67a;</span>
+			<span class="due-if note-icon">&#xe67a;</span>
 			<% } %>
-		<% } %>		
-		<span class="item-text"><%= item.note_name %></span>
-		<input class="rename-cont" type="text" value="<%= item.note_name %>">
-	</p>	
-	<p class="note-abstract">
-		web前端---已做: 双旦工行、建行雪花动画，建行提测正做: 建行bug修改要做: tffui页面更新
-	</p>
-	<p class="note-msg">
-		<span class="time-stamp">2017-3-3</span>
-		<span class="note-size">3KB</span>
-	</p>
+			<% } %>		
+			<span class="item-text"><%= item.note_name %></span>
+			<input class="rename-cont" type="text" value="<%= item.note_name %>">
+		</p>	
+		<p class="note-abstract">
+			web前端---已做: 双旦工行、建行雪花动画，建行提测正做: 建行bug修改要做: tffui页面更新
+		</p>
+		<p class="note-msg">
+			<span class="time-stamp">2017-3-3</span>
+			<span class="note-size">3KB</span>
+		</p>
+	</div>	
 </li>

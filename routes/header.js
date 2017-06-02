@@ -47,7 +47,8 @@ for (var i = 0; i < 8; i++) {
 	var note_type = i%2===0?"note":"mk";
 	var obj = {
         note_name: "日报 11.2"+(i+1),
-		note_type: note_type
+		note_type: note_type,
+		note_id: uuidV4()
 	};
 	search_test_data.push(obj);
 }

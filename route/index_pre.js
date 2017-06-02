@@ -47,7 +47,8 @@ for (var i = 0; i < 8; i++) {
 	var note_type = i%2===0?"note":"mk";
 	var obj = {
         note_name: "日报 11.2"+(i+1),
-		note_type: note_type
+		note_type: note_type,
+		note_id: uuidV4()
 	};
 	search_test_data.push(obj);
 }
@@ -193,7 +194,9 @@ router.post("/newNote", function(req, res, next){
 	
 
 	var item_data = {
-		note_type: req.body.type
+		note_name: "新建笔记",
+		note_type: req.body.type,
+		note_id: uuidV4()
 	};
 	var item_html = search_bar_item_temp({
 		item: item_data
@@ -212,13 +215,21 @@ router.post("/getNoteList",function(req, res, next){
 	var list_dom = "",
 		list_data = [
 			{
-				note_type:"note"
+				note_name: "日报 11.25",
+				note_type: "note",
+				note_id: uuidV4()
 			},{
-				note_type:"mk"
+				note_name: "日报 11.26",
+				note_type: "mk",
+				note_id: uuidV4()
 			},{
-				note_type:"note"
+				note_name: "日报 11.27",
+				note_type: "note",
+				note_id: uuidV4()
 			},{
-				note_type:"mk"
+				note_name: "日报 11.28",
+				note_type: "mk",
+				note_id: uuidV4()
 			}
 		]
 

@@ -162,6 +162,9 @@ article {
 .side-bar-main .selected .btn-text {
   color: #fff;
 }
+.side-bar-main .selected .arr-icon {
+  color: #fff;
+}
 .side-bar-main .selected:hover {
   background-color: #398dee;
 }
@@ -290,10 +293,11 @@ article {
 .search-bar-main .view-item {
   padding: 15px 20px;
   position: relative;
+  cursor: default;
   border-bottom: 1px solid #e0e1e5;
 }
 .search-bar-main .view-item:hover {
-  background-color: #f6f7f9;
+  background-color: #f3f4f7;
 }
 .search-bar-main .due-if {
   position: absolute;

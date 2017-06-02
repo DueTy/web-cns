@@ -13,12 +13,17 @@ function connectServer() {
     return client;
 }
 
+var tables = {
+    user: "user",
+    folder: "folder",
+    note: "note"
+};
+
 
 function userSelect(client, username, callback) {
     //client为一个mysql连接对象
-    client.query('select password from user where username="' + username + '"', function(err, results, fields) {
+    client.query('select password from '+tables["user"]+' where username="' + username + '"', function(err, results, fields) {
         if (err) throw err;
-
         callback(results);
     });
 }
