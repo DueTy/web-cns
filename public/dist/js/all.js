@@ -48,6 +48,7 @@ define(function(require){
 	require("mouseWheel");
 	require("customScrollBar");
 	require("widgetMenu");
+	require("renameWidget");
 	var editormd = require("editormd");
 
 	var main_box = $(".main-box"),
@@ -118,25 +119,36 @@ define(function(require){
  //            //this.resize("100%", 640);
  //        }
  //    });
+ 	
+
+ 	$(".new-menu").widgetMenu({
+		tri_par: ".side-bar .new-btn",
+		show_class: "blk-show"
+	});
  	$(".folder-menu").widgetMenu({
- 		trigger: ".folder-item",
- 		show_class: "folder-menu-show",
+ 		trigger: ".item-cont",
+		show_class: "blk-show",
+ 		tri_par: ".folder-item-list",
  		is_left: false,
  		flo_mouse: true,
- 		call: folderRenameCall
+ 		call: folderMenuCall
  	});
  	$(".folder-menu").widgetMenu({
  		trigger: ".folder-item .down-arr",
- 		show_class: "folder-menu-show",
- 		flo_mouse: true
+ 		tri_par: ".folder-item-list",
+		show_class: "blk-show",
+ 		flo_mouse: true,
+ 		call: folderMenuCall
  	});
  	$(".note-detail-menu").widgetMenu({
  		trigger: ".view-item",
- 		show_class: "note-detail-menu-show",
+		show_class: "blk-show",
+ 		tri_par: ".view-list",
  		is_left: false,
  		flo_mouse: true
  	});
- 	$(".arr-icon").on("click", function() {
+
+ 	folder_item_list.on("click",".arr-icon", function() {
  		var par_folder = $(this).parents(".item-cont")
  		var sub_list = par_folder.next(".sub-list");
  		par_folder.toggleClass("folder-open");
@@ -147,10 +159,7 @@ define(function(require){
 	var new_btn = $(".side-bar .new-btn"),
 		new_menu = $(".side-bar .new-menu");
 	
-	new_menu.widgetMenu({
-		trigger: ".side-bar .new-btn",
-		show_class: "new-menu-show"
-	});
+	
 
 	window.CKEDITOR.on("instanceReady", afterEditorInited);
 
@@ -169,8 +178,16 @@ define(function(require){
 			console.log(CKEDITOR.instances.editor.getData());
 		});
 	}
-	function folderRenameCall(obj){
-		console.log(obj.html());
+	function folderMenuCall(menu){
+		var rename_btn = menu.find(".rename"),
+			new_folder = menu.find(".new-folder");
+
+		rename_btn.on("click", function() {
+			var target_id = menu.attr("data-target-id");
+			var target = $("div[data-entity-id="+target_id+"]");
+			target.find(".rename-cont").renameWidget();
+		});
+
 	}
 });
 
@@ -1206,6 +1223,7 @@ define("widgetMenu",function(require,exports,module){
 				is_left: true,//默认为click true左键click，
 				//false右键contextmenu
 				trigger: "",
+				tri_par: "",
 				parent: "body",
 				show_class: "",
 				flo_mouse: false,//默认为不跟随鼠标事件
@@ -1215,29 +1233,33 @@ define("widgetMenu",function(require,exports,module){
 			var _this = $(this),
 				_ck_type = settings.is_left?"click":"contextmenu",
 				_flo_mouse = settings.flo_mouse,
+				_trigger_cls = settings.trigger,
 				_trigger = $(settings.trigger),
+				_tri_par = $(settings.tri_par),
 				_show_class = settings.show_class,
 				_mask = $(".page-mask"),
-				_mask_show_class = "mask-show",
+				_mask_show_class = "menu-show",
 				_this_height = $(this).height(),
 				_call_back = settings.call;
 
-
-			_trigger.on(_ck_type, addClass2Menu);	
+			_tri_par.on(_ck_type, _trigger_cls, addClass2Menu);	
 
 			_this.on("click", maskClick);
 			
 			_mask.on("click contextmenu", maskClick);
-			
 
-
+			_call_back(_this);
 
 			function addClass2Menu(e){
 				e.preventDefault();
+				var this_id = $(this).attr("data-entity-id");
 				var style_obj = _flo_mouse?setCoordinate(e):{};
-				_this.addClass(_show_class).css(style_obj);
+
+				_this.addClass(_show_class)
+				.css(style_obj)
+				.attr("data-target-id", this_id);
+				
 				_mask.addClass(_mask_show_class);
-				_call_back(_trigger);
 				return false;
 			}
 
@@ -1270,30 +1292,110 @@ define("widgetMenu",function(require,exports,module){
 });
 define("newFolder",function(require,exports,module){
 	"use strict";
-	var new_folder_btn = $(".side-bar .new-folder"),
-		folder_item_list = $(".side-bar .folder-item-list");
-	var list_container = folder_item_list
-	.is(".mCustomScrollbar")?folder_item_list
-	.find(".mCSB_container"):folder_item_list;
+
+	require("customScrollBar");
+	require("renameWidget");
+
+	var root_new_folder = $(".bar-top .new-folder"),
+		folder_menu = $(".folder-menu"),
+		list_new_folder = folder_menu.find(".new-folder"),
+		folder_item_list = $(".side-bar .folder-item-list"),
+		list_container = folder_item_list.find(".mCSB_container");
 	
-	new_folder_btn.on("click", function() {
+	root_new_folder.on("click", rootAjax);
+
+	list_new_folder.on("click", itemAjax);
+
+	function rootAjax(data){
 		var post_data = {
-			is_new: true
+			is_new: true,
+			par_folder_level: 0
 		};
 		$.ajax({
 			url: "/newFolder",
 			type: "POST",
 			dataType: "JSON",
 			data: post_data,
-			success:function(data){
-				var dom_data = "";
+			success: function(data){
+				var dom_data = "",
+				folder_id = "";
 				if(data){
-					dom_data = data.dom_data;
+					dom_data = data.dom_data,
+					folder_id = data.folder_id;
+
 					list_container.prepend(dom_data);
+
+					var new_folder_node = list_container
+					.find("div[data-entity-id="+folder_id+"]");
+
+					new_folder_node.find(".rename-cont").renameWidget();
 				}
 			}
-		});	
-	});
+		});
+		folder_item_list.mCustomScrollbar("update");		
+	}
+
+	function itemAjax(data){
+		var post_data = {
+			is_new: true
+		};
+
+		var has_sub_icon = ["<i class=\"due-if arr-icon\">&#xe637;</i>"].join(""),
+			open_arr_dom = ["<span class=\"has-sub-open\">",
+							"<i class=\"due-if arr-icon\">&#xe636;</i>",
+							"<i class=\"due-if folder-icon\">&#xe633;</i>",
+							"</span>"].join(""),
+			sub_list_dom = ["<ul class=\"sub-list\">",
+							"</ul>"].join("");
+
+		var par_folder_id = (folder_menu).attr("data-target-id"),
+			par_folder = list_container
+						.find("div[data-entity-id="+par_folder_id+"]");
+
+		var is_has_sub = par_folder.find(".has-sub .arr-icon")[0]?true:false;
+
+		if(!is_has_sub){
+			par_folder.after(sub_list_dom);
+			var par_has_sub = par_folder.find(".has-sub");
+
+			par_has_sub.append(has_sub_icon);
+			par_has_sub.after(open_arr_dom);
+		}		
+
+		var sub_list = par_folder.next(".sub-list");
+
+		var par_folder_level = par_folder.data("level");
+
+		post_data.par_folder_level = par_folder_level;
+
+		$.ajax({
+			url: "/newFolder",
+			type: "POST",
+			dataType: "JSON",
+			data: post_data,
+			success: function(data){
+				var dom_data = "",
+				folder_id = "";
+				if(data){
+					dom_data = data.dom_data,
+					folder_id = data.folder_id;
+
+					sub_list.prepend(dom_data);
+
+					var new_folder_node = list_container
+					.find("div[data-entity-id="+folder_id+"]");
+
+					par_folder.find(".has-sub .arr-icon").trigger("click");
+
+					new_folder_node.find(".rename-cont").renameWidget();
+
+				}
+			}
+		});
+		folder_item_list.mCustomScrollbar("update");
+	}
+
+	
 
 
 });
@@ -1334,4 +1436,73 @@ define("newNote",function(require,exports,module){
 			}
 		});	
 	}
+});
+define("renameWidget",function(require,exports,module){
+	"use strict";
+
+	(function($){
+
+		if (!$) {
+            return console.warn("widgetMenu needs jQuery");
+        }
+        $.fn.renameWidget = function(){
+        	var _this = $(this),
+        		_mask = $(".page-mask"),
+        		_blk_show_cls = "rename-show",
+        		_ipt_show_cls = "ipt-show";
+
+    		return this.each(function(){
+    			_this.addClass(_ipt_show_cls).trigger("select");
+    			_mask.addClass(_blk_show_cls);
+
+    			_this.on("keydown", renameComplete);
+
+    			_mask.on("click contextmenu", renameComplete);
+    		});
+    		function renameComplete(e){
+    			var e_type = e.type,
+    				_val = _this.val();
+    			if(e_type==="keydown"){
+    				var keyCode = e.keyCode;
+    				if (keyCode === 13) {
+    					renameAjax(_val);    					
+    				}
+    			}else{
+    				renameAjax(_val);
+    			}    			
+    		}
+    		function renameAjax(val){
+
+    			var this_par = _this.parents(".item-cont"),
+    				pre_name = this_par.children(".btn-text");
+
+    			if(val === ""){
+					_this.val(pre_name.text());
+    			}else{
+    				var post_data = {
+    					val: val,
+    					folder_id: this_par.data("folder-id")
+    				};
+
+    				_this.val(val);
+    				pre_name.text(val);
+
+    				// $.ajax({
+    				// 	url: "/rename",
+    				// 	type: "POST",
+    				// 	dataType: "JSON",
+    				// 	data: post_data,
+    				// 	success:function(data){
+    				// 		if(data){
+    				// 			rename_item.children(".btn-text").text(data.new_name);
+    				// 		}
+    				// 	}
+    				// });
+    			}
+    			_this.removeClass(_ipt_show_cls);
+    			_mask.removeClass(_blk_show_cls);
+    		}        	
+        };
+
+	})(window.jQuery || require("jquery"));
 });

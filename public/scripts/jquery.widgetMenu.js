@@ -12,6 +12,7 @@ define("widgetMenu",function(require,exports,module){
 				is_left: true,//默认为click true左键click，
 				//false右键contextmenu
 				trigger: "",
+				tri_par: "",
 				parent: "body",
 				show_class: "",
 				flo_mouse: false,//默认为不跟随鼠标事件
@@ -21,29 +22,33 @@ define("widgetMenu",function(require,exports,module){
 			var _this = $(this),
 				_ck_type = settings.is_left?"click":"contextmenu",
 				_flo_mouse = settings.flo_mouse,
+				_trigger_cls = settings.trigger,
 				_trigger = $(settings.trigger),
+				_tri_par = $(settings.tri_par),
 				_show_class = settings.show_class,
 				_mask = $(".page-mask"),
-				_mask_show_class = "mask-show",
+				_mask_show_class = "menu-show",
 				_this_height = $(this).height(),
 				_call_back = settings.call;
 
-
-			_trigger.on(_ck_type, addClass2Menu);	
+			_tri_par.on(_ck_type, _trigger_cls, addClass2Menu);	
 
 			_this.on("click", maskClick);
 			
 			_mask.on("click contextmenu", maskClick);
-			
 
-
+			_call_back(_this);
 
 			function addClass2Menu(e){
 				e.preventDefault();
+				var this_id = $(this).attr("data-entity-id");
 				var style_obj = _flo_mouse?setCoordinate(e):{};
-				_this.addClass(_show_class).css(style_obj);
+
+				_this.addClass(_show_class)
+				.css(style_obj)
+				.attr("data-target-id", this_id);
+				
 				_mask.addClass(_mask_show_class);
-				_call_back(_trigger);
 				return false;
 			}
 

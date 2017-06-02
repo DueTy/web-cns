@@ -219,6 +219,7 @@ article{
         right: 0;
         color: #737373;
         display: none;
+        margin-top: 2px;
     }
     .rename-cont{
         position: absolute;
@@ -226,6 +227,10 @@ article{
         height: 25px;
         margin-top: 1px;
         display: none;
+        z-index: 100;
+    }
+    .ipt-show{
+        display: inline-block;
     }
     .folder-open{
         .has-sub{
@@ -272,7 +277,6 @@ article{
         padding: 1px;
     }   
 }
-
 .search-bar-main{        
     border: 1px solid #e0e1e5;
     border-width: 0 1px 1px 0;
@@ -298,6 +302,17 @@ article{
         overflow: hidden;
         white-space: nowrap;    
         text-overflow: ellipsis;
+    }
+    .rename-cont{
+        position: absolute;
+        left: 43px;
+        height: 25px;
+        margin-top: -2px;
+        z-index: 100;
+        display: none;
+    }
+    .ipt-show{
+        display: inline-block;
     }
     .note-icon{
         color: #AED286;
@@ -468,9 +483,6 @@ article{
     z-index: 99;
     display: none;
 }
-.mask-show{
-    display: block;
-}
 .new-menu{
     margin: -10px 0 0 10px;
     display: none;
@@ -485,6 +497,9 @@ article{
     top: 0;
     margin-top: -50px;
 }
-.new-menu-show,.folder-menu-show,.note-detail-menu-show{
+.ipt-show{
+    display: inline-block;
+}
+.blk-show,.menu-show,.rename-show{
     display: block;
 }

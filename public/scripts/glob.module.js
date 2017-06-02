@@ -4,6 +4,7 @@ define(function(require){
 	require("mouseWheel");
 	require("customScrollBar");
 	require("widgetMenu");
+	require("renameWidget");
 	var editormd = require("editormd");
 
 	var main_box = $(".main-box"),
@@ -74,25 +75,36 @@ define(function(require){
  //            //this.resize("100%", 640);
  //        }
  //    });
+ 	
+
+ 	$(".new-menu").widgetMenu({
+		tri_par: ".side-bar .new-btn",
+		show_class: "blk-show"
+	});
  	$(".folder-menu").widgetMenu({
- 		trigger: ".folder-item",
- 		show_class: "folder-menu-show",
+ 		trigger: ".item-cont",
+		show_class: "blk-show",
+ 		tri_par: ".folder-item-list",
  		is_left: false,
  		flo_mouse: true,
- 		call: folderRenameCall
+ 		call: folderMenuCall
  	});
  	$(".folder-menu").widgetMenu({
  		trigger: ".folder-item .down-arr",
- 		show_class: "folder-menu-show",
- 		flo_mouse: true
+ 		tri_par: ".folder-item-list",
+		show_class: "blk-show",
+ 		flo_mouse: true,
+ 		call: folderMenuCall
  	});
  	$(".note-detail-menu").widgetMenu({
  		trigger: ".view-item",
- 		show_class: "note-detail-menu-show",
+		show_class: "blk-show",
+ 		tri_par: ".view-list",
  		is_left: false,
  		flo_mouse: true
  	});
- 	$(".arr-icon").on("click", function() {
+
+ 	folder_item_list.on("click",".arr-icon", function() {
  		var par_folder = $(this).parents(".item-cont")
  		var sub_list = par_folder.next(".sub-list");
  		par_folder.toggleClass("folder-open");
@@ -103,10 +115,7 @@ define(function(require){
 	var new_btn = $(".side-bar .new-btn"),
 		new_menu = $(".side-bar .new-menu");
 	
-	new_menu.widgetMenu({
-		trigger: ".side-bar .new-btn",
-		show_class: "new-menu-show"
-	});
+	
 
 	window.CKEDITOR.on("instanceReady", afterEditorInited);
 
@@ -125,7 +134,15 @@ define(function(require){
 			console.log(CKEDITOR.instances.editor.getData());
 		});
 	}
-	function folderRenameCall(obj){
-		console.log(obj.html());
+	function folderMenuCall(menu){
+		var rename_btn = menu.find(".rename"),
+			new_folder = menu.find(".new-folder");
+
+		rename_btn.on("click", function() {
+			var target_id = menu.attr("data-target-id");
+			var target = $("div[data-entity-id="+target_id+"]");
+			target.find(".rename-cont").renameWidget();
+		});
+
 	}
 });

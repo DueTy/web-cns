@@ -12,31 +12,31 @@ var md5 = require("md5");
 
 
 var side_test_data = [];
-for (var i = 0; i < 20; i++) {
+for (var i = 0; i < 10; i++) {
     var obj = {
         folder_name: "笔记"+(i+1),
         level: 1,
-        folder_id: "folder"+(i+1)+"lv1",
+        folder_id: uuidV4(),
         sub_list:[
-        	{
-        		folder_name: "level21",
-        		level:2,
-        		folder_id: "folder"+(i+1)+"lv21",
-        		sub_list: [
-        			{
-        				folder_name: "level3",
-        				level:3,
-        				folder_id: "folder"+(i+1)+"lv3",
-        				sub_list:[]
-        			}
-        		]
-        	},{
-        		folder_name: "level22",
-        		level:2,
-        		folder_id: "folder"+(i+1)+"lv22",
-        		sub_list: [
-        		]
-        	}
+        	// {
+        	// 	folder_name: "level21",
+        	// 	level:2,
+        	// 	folder_id: uuidV4(),
+        	// 	sub_list: [
+        	// 		{
+        	// 			folder_name: "level3",
+        	// 			level:3,
+        	// 			folder_id: uuidV4(),
+        	// 			sub_list:[]
+        	// 		}
+        	// 	]
+        	// },{
+        	// 	folder_name: "level22",
+        	// 	level:2,
+        	// 	folder_id: "folder"+(i+1)+"lv22",
+        	// 	sub_list: [
+        	// 	]
+        	// }
         ]
     };
     side_test_data.push(obj); 
@@ -46,6 +46,7 @@ var search_test_data = [];
 for (var i = 0; i < 8; i++) {
 	var note_type = i%2===0?"note":"mk";
 	var obj = {
+        note_name: "日报 11.2"+(i+1),
 		note_type: note_type
 	};
 	search_test_data.push(obj);
