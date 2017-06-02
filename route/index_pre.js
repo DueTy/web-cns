@@ -12,7 +12,7 @@ var md5 = require("md5");
 
 
 var side_test_data = [];
-for (var i = 0; i < 10; i++) {
+for (var i = 0; i < 20; i++) {
     var obj = {
         folder_name: "笔记"+(i+1),
         level: 1,
@@ -203,6 +203,35 @@ router.post("/newNote", function(req, res, next){
 		msg: "note inited success",
 		dom_data: item_html
 	});
+
+});
+
+router.post("/getNoteList",function(req, res, next){
+	var req_folder = req.body.folder_id;
+
+	var list_dom = "",
+		list_data = [
+			{
+				note_type:"note"
+			},{
+				note_type:"mk"
+			},{
+				note_type:"note"
+			},{
+				note_type:"mk"
+			}
+		]
+
+	for (var i = 0; i < list_data.length; i++) {
+		list_dom += search_bar_item_temp({
+			item: list_data[i]
+		});
+	}
+
+	res.send({
+		msg: "folder's notes get successfully",
+		list_dom: list_dom
+	})
 
 });
 

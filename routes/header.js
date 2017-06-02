@@ -12,7 +12,7 @@ var md5 = require("md5");
 
 
 var side_test_data = [];
-for (var i = 0; i < 10; i++) {
+for (var i = 0; i < 20; i++) {
     var obj = {
         folder_name: "笔记"+(i+1),
         level: 1,

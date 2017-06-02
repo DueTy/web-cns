@@ -23,7 +23,10 @@ define(function(require){
 	folder_item_list.fullHeight();
 	
 	var scroll_opts = {
-		mouseWheelPixels: 250
+		mouseWheelPixels: 250,
+		advanced:{
+    		autoScrollOnFocus:false
+  		}
 	};
 	view_list.mCustomScrollbar(scroll_opts);
 	folder_item_list.mCustomScrollbar(scroll_opts);

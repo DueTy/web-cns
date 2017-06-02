@@ -1,17 +1,18 @@
 define("newNote",function(require,exports,module){	
 	"use strict";
 
-	var new_note_btn = $(".new-menu .new-note"),
-		new_mk_btn = $(".new-menu .new-mk");
-	var view_list = $(".view-list");
-	var list_container = view_list
-	.is(".mCustomScrollbar")?view_list
-	.find(".mCSB_container"):view_list;
+	var root_new_note = $(".new-menu .new-note"),
+		root_new_mk = $(".new-menu .new-mk"),
+		folder_menu = $(".folder-menu"),
+		folder_new_note = folder_menu.find(".new-note"),
+		folder_new_mk = folder_menu.find(".new-mk"),
+		view_list = $(".view-list"),
+		list_container = view_list.find(".mCSB_container");
 
-	new_note_btn.on("click", addAndPost);
-	new_mk_btn.on("click", addAndPost);
+	root_new_note.on("click", addAndPost);
+	root_new_mk.on("click", addAndPost);
 
-	function addAndPost(){
+	function rootAjax(){
 		var _this = $(this),
 			_type = "";
 		
@@ -34,5 +35,9 @@ define("newNote",function(require,exports,module){
 				}
 			}
 		});	
+	}
+
+	function folderAjax(){
+		
 	}
 });

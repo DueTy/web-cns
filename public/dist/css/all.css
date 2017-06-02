@@ -123,14 +123,18 @@ article {
   border-width: 0 1px 1px 0;
 }
 .side-bar-main .side-bar-item {
-  line-height: 25px;
+  line-height: 30px;
   position: relative;
-  padding: 5px 0 0 30px;
+  padding-left: 30px;
   text-decoration: none;
   display: block;
 }
 .side-bar-main .side-bar-item .btn-text {
   color: #737373;
+}
+.side-bar-main .item-cont {
+  padding-top: 5px;
+  height: 35px;
 }
 .side-bar-main .item-cont:hover {
   background-color: #e4edf8;
@@ -167,7 +171,14 @@ article {
   color: #fff;
 }
 .newest .due-if {
-  top: 2px;
+  top: -2px;
+  margin-left: -2px;
+}
+.my-folders .folder-list-title {
+  line-height: 35px;
+}
+.my-folders .folder-list-title .due-if {
+  top: -1px;
   margin-left: -2px;
 }
 .folder-item-list {
@@ -243,6 +254,7 @@ article {
   color: #737373;
   font-size: 18px;
   background-color: #fff;
+  z-index: 101;
 }
 .side-close:hover,
 .side-open:hover {

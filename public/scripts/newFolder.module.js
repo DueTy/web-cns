@@ -93,8 +93,10 @@ define("newFolder",function(require,exports,module){
 					var new_folder_node = list_container
 					.find("div[data-entity-id="+folder_id+"]");
 
-					par_folder.find(".has-sub .arr-icon").trigger("click");
-
+					if(!par_folder.hasClass("folder-open")){
+						par_folder.find(".has-sub .arr-icon").trigger("click");
+					}
+					
 					new_folder_node.find(".rename-cont").renameWidget();
 
 				}
