@@ -18,9 +18,11 @@ define("renameWidget",function(require,exports,module){
 
                 _this.one("keydown", renameComplete);
 
-                _mask.one("click contextmenu", renameComplete);
-    			
+                _mask.one("click contextmenu", renameComplete);    			
     		});
+            $(window).on("keydown" , function() {
+                console.log("window keydown");
+            });
 
     		function renameComplete(e){
     			var e_type = e.type,
@@ -48,10 +50,6 @@ define("renameWidget",function(require,exports,module){
     					entity_id: this_par.attr("data-entity-id"),
                         entity_type: entity_type
     				};
-                    console.log(post_data);
-
-    				_this.val(val);
-    				pre_name.text(val);
 
     				$.ajax({
     					url: "/rename",
@@ -59,8 +57,9 @@ define("renameWidget",function(require,exports,module){
     					dataType: "JSON",
     					data: post_data,
     					success:function(data){
-    						if(data){
-    							rename_item.children(".btn-text").text(data.new_name);
+    						if(data && data.is_affected){
+    							this_par.find(".btn-text").eq(0).text(data.new_name);
+                                _this.val(data.new_name);
     						}
     					}
     				});

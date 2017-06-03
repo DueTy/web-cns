@@ -149,8 +149,7 @@ define(function(require){
  	view_list.on("click", ".item-cont", function() {
  		var post_data = {},
  			_this = $(this),
- 			note_id = _this.attr("data-entity-id");
- 		
+ 			note_id = _this.attr("data-entity-id"); 		
  	});
 
 
@@ -179,7 +178,7 @@ define(function(require){
 	function renameCall(menu){
 		var rename_btn = menu.find(".rename");
 
-		rename_btn.one("click", function() {
+		rename_btn.on("click", function() {
 			var target_id = menu.attr("data-target-id");
 			var target = $("div[data-entity-id="+target_id+"]");
 			target.find(".rename-cont").renameWidget();

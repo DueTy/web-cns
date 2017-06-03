@@ -48,13 +48,13 @@ function renameFun(client, rename_msg, callback) {
     var type = rename_msg.entity_type,
         val = rename_msg.val,
         id = rename_msg.entity_id;
-    var sql = "update "+tables[type]+" set "+type+"_name="+val+" where "+type+"_id="+id;
-    console.log(sql);
+    var sql = "update "+tables[type]+" set "+type+"_name='"+val+"' where "+type+"_id='"+id+"'";
     client.query(sql,function(err,result){
+        console.log(sql);
         if (err) {
             console.log("error:" + err.message);
         }
-        callback(err);
+        callback(err,result);
     });
 }
 
