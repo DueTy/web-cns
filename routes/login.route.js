@@ -11,14 +11,20 @@ router.route('/login').get(function(req, res) {
         user: res.locals.islogin
     });
 }).post(function(req, res) {
-    client = userCon.connect();
+    client = dbCon.connect();
     result = null;
-    userCon.userSelect(client, req.body.username, function(result) {
+    dbCon.userSelect(client, req.body.username, function(result) {
         if (result[0] === undefined) {
             res.send('没有该用户');
         } else {
+            console.log(result[0]);
             if (result[0].password === req.body.password) {
-                req.session.islogin = req.body.username;
+
+                var user_msg = {
+                    user_name: req.body.username,
+                    user_id: result[0].user_id
+                };
+                req.session.islogin = user_msg;
                 res.locals.islogin = req.session.islogin;
                 res.cookie('islogin', res.locals.islogin, {
                     maxAge: 60000

@@ -87,7 +87,7 @@ define(function(require){
 		tri_par: ".side-bar .new-btn",
 		show_class: "blk-show"
 	});
- 	$(".folder-menu").widgetMenu({
+ 	$(".flo-menu").widgetMenu({
  		trigger: ".item-cont",
 		show_class: "blk-show",
  		tri_par: ".folder-item-list",
@@ -95,7 +95,7 @@ define(function(require){
  		flo_mouse: true,
  		call: renameCall
  	});
- 	$(".folder-menu").widgetMenu({
+ 	$(".down-arr-menu").widgetMenu({
  		trigger: ".folder-item .down-arr",
  		tri_par: ".folder-item-list",
 		show_class: "blk-show",
@@ -112,7 +112,7 @@ define(function(require){
  	});
 
  	folder_item_list.on("click",".arr-icon", function() {
- 		var par_folder = $(this).parents(".item-cont")
+ 		var par_folder = $(this).parents(".item-cont");
  		var sub_list = par_folder.next(".sub-list");
  		par_folder.toggleClass("folder-open");
  		sub_list.toggleClass("list-open");
@@ -179,7 +179,7 @@ define(function(require){
 	function renameCall(menu){
 		var rename_btn = menu.find(".rename");
 
-		rename_btn.on("click", function() {
+		rename_btn.one("click", function() {
 			var target_id = menu.attr("data-target-id");
 			var target = $("div[data-entity-id="+target_id+"]");
 			target.find(".rename-cont").renameWidget();

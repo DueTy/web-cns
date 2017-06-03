@@ -131,7 +131,7 @@ define(function(require){
 		tri_par: ".side-bar .new-btn",
 		show_class: "blk-show"
 	});
- 	$(".folder-menu").widgetMenu({
+ 	$(".flo-menu").widgetMenu({
  		trigger: ".item-cont",
 		show_class: "blk-show",
  		tri_par: ".folder-item-list",
@@ -139,7 +139,7 @@ define(function(require){
  		flo_mouse: true,
  		call: renameCall
  	});
- 	$(".folder-menu").widgetMenu({
+ 	$(".down-arr-menu").widgetMenu({
  		trigger: ".folder-item .down-arr",
  		tri_par: ".folder-item-list",
 		show_class: "blk-show",
@@ -156,7 +156,7 @@ define(function(require){
  	});
 
  	folder_item_list.on("click",".arr-icon", function() {
- 		var par_folder = $(this).parents(".item-cont")
+ 		var par_folder = $(this).parents(".item-cont");
  		var sub_list = par_folder.next(".sub-list");
  		par_folder.toggleClass("folder-open");
  		sub_list.toggleClass("list-open");
@@ -223,7 +223,7 @@ define(function(require){
 	function renameCall(menu){
 		var rename_btn = menu.find(".rename");
 
-		rename_btn.on("click", function() {
+		rename_btn.one("click", function() {
 			var target_id = menu.attr("data-target-id");
 			var target = $("div[data-entity-id="+target_id+"]");
 			target.find(".rename-cont").renameWidget();
@@ -231,6 +231,85 @@ define(function(require){
 	}
 });
 
+define("backLayer",function(require,exports,module){
+	"use strict";
+	(function($){
+
+		if (!$) {
+            return console.warn("backLayer needs jQuery");
+        }
+        $.fn.backLayer = function(opts) {
+
+        	var defaults = {
+        		call:{},
+        		bg_color: "#000"
+        	};
+
+        	var settings = $.extend(defaults, opts);
+
+			var isIE = (document.all) ? true : false;
+    		var isIE6 = isIE && !window.XMLHttpRequest;
+    		var position = !isIE6 ? "fixed" : "absolute";
+    		var containerBox = $(this);
+    		var bg_color = settings.bg_color;
+
+        	return this.each(function(){
+        		containerBox.css({
+        			"z-index": "9999",
+        			"display": "block",
+        			"position": position,
+        			"top": "50%",
+        			"left": "50%",
+        			"margin-top": -(containerBox.height() / 2) + "px",
+        			"margin-left": -(containerBox.width() / 2) + "px"
+        		});
+        		var layer = $("<div></div>");
+        		layer.css({
+        			"width": "100%",
+        			"height": "100%",
+        			"position": position,
+        			"top": "0px",
+        			"left": "0px",
+        			"background-color": bg_color,
+        			"z-index": "9998",
+        			"opacity": "0.5"
+        		});
+        		$("body").append(layer);
+
+        		if (isIE) {
+        			layer.css("filter", "alpha(opacity=60)");
+        		}
+        		if (isIE6) {
+        			layer_iestyle();
+        			containerBox_iestyle();
+        		}
+        		$("window").resize(function() {
+        			layer_iestyle();
+        		});
+        	});
+        
+
+        	function layer_iestyle() {
+        		var maxWidth = Math.max(document.documentElement.scrollWidth, document.documentElement.clientWidth) + "px";
+        		var maxHeight = Math.max(document.documentElement.scrollHeight, document.documentElement.clientHeight) + "px";
+        		layer.css({
+        			"width": maxWidth,
+        			"height": maxHeight
+        		});
+        	}
+
+        	function containerBox_iestyle() {
+        		var marginTop = $(document).scrollTop - containerBox.height() / 2 + "px";
+        		var marginLeft = $(document).scrollLeft - containerBox.width() / 2 + "px";
+        		containerBox.css({
+        			"margin-top": marginTop,
+        			"margin-left": marginLeft
+        		});
+        	}
+    };
+
+	})(window.jQuery || require("jquery"));
+});
 /*
 == malihu jquery custom scrollbars plugin == 
 version: 2.8.2 
@@ -1349,7 +1428,8 @@ define("newFolder",function(require,exports,module){
 	function rootAjax(data){
 		var post_data = {
 			is_new: true,
-			par_folder_level: 0
+			par_folder_level: 0,
+			par_folder_id: "root"
 		};
 		$.ajax({
 			url: "/newFolder",
@@ -1407,6 +1487,7 @@ define("newFolder",function(require,exports,module){
 		var par_folder_level = par_folder.data("level");
 
 		post_data.par_folder_level = par_folder_level;
+		post_data.par_folder_id = par_folder_id;
 
 		$.ajax({
 			url: "/newFolder",
@@ -1507,7 +1588,7 @@ define("renameWidget",function(require,exports,module){
 	(function($){
 
 		if (!$) {
-            return console.warn("widgetMenu needs jQuery");
+            return console.warn("rename needs jQuery");
         }
         $.fn.renameWidget = function(){
         	var _this = $(this),
@@ -1519,10 +1600,12 @@ define("renameWidget",function(require,exports,module){
     			_this.addClass(_ipt_show_cls).trigger("select");
     			_mask.addClass(_blk_show_cls);
 
-    			_this.on("keydown", renameComplete);
+                _this.one("keydown", renameComplete);
 
-    			_mask.on("click contextmenu", renameComplete);
+                _mask.one("click contextmenu", renameComplete);
+    			
     		});
+
     		function renameComplete(e){
     			var e_type = e.type,
     				_val = _this.val();
@@ -1538,30 +1621,33 @@ define("renameWidget",function(require,exports,module){
     		function renameAjax(val){
 
     			var this_par = _this.parents(".item-cont"),
-    				pre_name = this_par.children(".btn-text");
+    				pre_name = this_par.children(".btn-text"),
+                    entity_type = this_par.parent().hasClass("folder-item")?"folder":"note";
 
     			if(val === ""){
 					_this.val(pre_name.text());
     			}else{
     				var post_data = {
     					val: val,
-    					folder_id: this_par.data("folder-id")
+    					entity_id: this_par.attr("data-entity-id"),
+                        entity_type: entity_type
     				};
+                    console.log(post_data);
 
     				_this.val(val);
     				pre_name.text(val);
 
-    				// $.ajax({
-    				// 	url: "/rename",
-    				// 	type: "POST",
-    				// 	dataType: "JSON",
-    				// 	data: post_data,
-    				// 	success:function(data){
-    				// 		if(data){
-    				// 			rename_item.children(".btn-text").text(data.new_name);
-    				// 		}
-    				// 	}
-    				// });
+    				$.ajax({
+    					url: "/rename",
+    					type: "POST",
+    					dataType: "JSON",
+    					data: post_data,
+    					success:function(data){
+    						if(data){
+    							rename_item.children(".btn-text").text(data.new_name);
+    						}
+    					}
+    				});
     			}
     			_this.removeClass(_ipt_show_cls);
     			_mask.removeClass(_blk_show_cls);

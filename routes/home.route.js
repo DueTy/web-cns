@@ -7,7 +7,7 @@ router.get('/home', function(req, res) {
     }
     res.render('home', {
         title: '首页',
-        user: res.locals.islogin,        
+        user_msg: res.locals.islogin, 
         side_data: side_test_data,
         search_data: search_test_data
     });

@@ -17,7 +17,8 @@ define("newFolder",function(require,exports,module){
 	function rootAjax(data){
 		var post_data = {
 			is_new: true,
-			par_folder_level: 0
+			par_folder_level: 0,
+			par_folder_id: "root"
 		};
 		$.ajax({
 			url: "/newFolder",
@@ -75,6 +76,7 @@ define("newFolder",function(require,exports,module){
 		var par_folder_level = par_folder.data("level");
 
 		post_data.par_folder_level = par_folder_level;
+		post_data.par_folder_id = par_folder_id;
 
 		$.ajax({
 			url: "/newFolder",

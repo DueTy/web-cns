@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var userCon = require('../dao/dbCon');
+var dbCon = require('../dao/dbCon');
 var uuidV4 = require("uuid/v4");
-
+var sd_time = require("silly-datetime");
 //引入art-template，并延展.ejs
 var art_temp = require("art-template");
 require.extensions[".ejs"] = art_temp.extension;
@@ -11,8 +11,12 @@ var multer = require("multer");
 var md5 = require("md5");
 
 
+function getDateTime(){
+	return sd_time.format(new Date(), 'YYYY-MM-DD hh:mm:ss');
+}
+
 var side_test_data = [];
-for (var i = 0; i < 20; i++) {
+for (var i = 0; i < 10; i++) {
     var obj = {
         folder_name: "笔记"+(i+1),
         level: 1,
@@ -61,7 +65,7 @@ router.get('/home', function(req, res) {
     }
     res.render('home', {
         title: '首页',
-        user: res.locals.islogin,        
+        user_msg: res.locals.islogin, 
         side_data: side_test_data,
         search_data: search_test_data
     });
@@ -95,14 +99,20 @@ router.route('/login').get(function(req, res) {
         user: res.locals.islogin
     });
 }).post(function(req, res) {
-    client = userCon.connect();
+    client = dbCon.connect();
     result = null;
-    userCon.userSelect(client, req.body.username, function(result) {
+    dbCon.userSelect(client, req.body.username, function(result) {
         if (result[0] === undefined) {
             res.send('没有该用户');
         } else {
+            console.log(result[0]);
             if (result[0].password === req.body.password) {
-                req.session.islogin = req.body.username;
+
+                var user_msg = {
+                    user_name: req.body.username,
+                    user_id: result[0].user_id
+                };
+                req.session.islogin = user_msg;
                 res.locals.islogin = req.session.islogin;
                 res.cookie('islogin', res.locals.islogin, {
                     maxAge: 60000
@@ -126,18 +136,37 @@ router.route('/reg').get(function(req, res) {
         title: '注册'
     });
 }).post(function(req, res) {
-    client = userCon.connect();
-    var user_name = req.body.username,
-        user_password = req.body.password,
-        user_id = uuidV4();
-    userCon.userInsert(client,
-     user_name, 
-     user_password, 
-     user_id, 
+    client = dbCon.connect();
+    var req_body = req.body;
+    
+    var user_msg = {
+        user_id: uuidV4(),
+        user_name: req_body.username,
+        gender: req_body.gender,
+        personal_desc: req_body.personal_desc,
+        password: req_body.password,
+        orgnazition_build_count: 1,
+        created_at: getDateTime(),
+        belong_org_id: "",
+        note_mag_permisstion: 0
+    };
+    var sql_param =[
+        user_msg.user_id,
+        user_msg.user_name,
+        user_msg.gender,
+        user_msg.personal_desc,
+        user_msg.password,
+        user_msg.orgnazition_build_count,
+        user_msg.created_at,
+        user_msg.belong_org_id,
+        user_msg.note_mag_permisstion
+    ];
+    dbCon.userInsert(client,
+     sql_param,
      function(err) {
         if (err) throw err;
         if(!err){
-            req.session.islogin = user_name;
+            req.session.islogin = user_msg.user_name;
             res.locals.islogin = req.session.islogin;
             res.cookie('islogin', res.locals.islogin, {
                 maxAge: 60000
@@ -167,23 +196,54 @@ router.route('/regMsg').get(function(req, res){
 var side_bar_item_temp = require("../views/sideItemTemp.ejs");
 
 router.post("/newFolder",function(req, res, next){
-	var folder_id = uuidV4();
-	var req_data = req.body;
-	var item_data = {
-		folder_name: "新建文件夹",
-		level: parseInt(req_data.par_folder_level)+1,
-		folder_id: folder_id
-	};
-	console.log(item_data);
+	var client = dbCon.connect();
 
-	var item_html = side_bar_item_temp({
-		item: item_data
+	var folder_id = uuidV4();
+	var req_body = req.body;
+
+	var user_msg = {};
+	if(req.session.islogin){
+		user_msg = req.session.islogin;
+	}
+	var new_folder_msg = {
+		folder_id: uuidV4(),
+		folder_name: "新建文件夹",
+		folder_level: parseInt(req_body.par_folder_level)+1,
+		belong_id: user_msg.user_id,
+		par_folder_id: req_body.par_folder_id,
+		created_at: getDateTime()
+	};
+	var sql_param = [
+		new_folder_msg.folder_id,
+		new_folder_msg.folder_name,
+		new_folder_msg.folder_level,
+		new_folder_msg.belong_id,
+		new_folder_msg.par_folder_id,
+		new_folder_msg.created_at
+	];
+
+	dbCon.folderInsert(client, sql_param, function(err){
+		if (err) throw err;
+		if(!err){
+			var item_data = {
+				folder_name: new_folder_msg.folder_name,
+				level: new_folder_msg.folder_level,
+				folder_id: new_folder_msg.folder_id
+			};
+			var item_html = side_bar_item_temp({
+				item: item_data
+			});
+			res.send({
+				msg:"folder inited success",
+				dom_data: item_html,
+				folder_id: new_folder_msg.folder_id
+			});
+		}
 	});
-	res.send({
-		msg:"folder inited success",
-		dom_data: item_html,
-		folder_id: folder_id
-	});
+
+	
+
+	
 
 
 });
@@ -244,6 +304,20 @@ router.post("/getNoteList",function(req, res, next){
 		list_dom: list_dom
 	})
 
+});
+
+router.post("/rename",function(req, res, next){
+	var client = dbCon.connect();
+	var req_body = req.body;
+
+	dbCon.renameFun(client,req_body,function(){
+		if (err) throw err;
+		if(!err){
+			res.send({
+				msg: req_body.entity_type+" rename success"
+			});
+		}
+	});
 });
 
 module.exports = router;

@@ -4,18 +4,37 @@ router.route('/reg').get(function(req, res) {
         title: '注册'
     });
 }).post(function(req, res) {
-    client = userCon.connect();
-    var user_name = req.body.username,
-        user_password = req.body.password,
-        user_id = uuidV4();
-    userCon.userInsert(client,
-     user_name, 
-     user_password, 
-     user_id, 
+    client = dbCon.connect();
+    var req_body = req.body;
+    
+    var user_msg = {
+        user_id: uuidV4(),
+        user_name: req_body.username,
+        gender: req_body.gender,
+        personal_desc: req_body.personal_desc,
+        password: req_body.password,
+        orgnazition_build_count: 1,
+        created_at: getDateTime(),
+        belong_org_id: "",
+        note_mag_permisstion: 0
+    };
+    var sql_param =[
+        user_msg.user_id,
+        user_msg.user_name,
+        user_msg.gender,
+        user_msg.personal_desc,
+        user_msg.password,
+        user_msg.orgnazition_build_count,
+        user_msg.created_at,
+        user_msg.belong_org_id,
+        user_msg.note_mag_permisstion
+    ];
+    dbCon.userInsert(client,
+     sql_param,
      function(err) {
         if (err) throw err;
         if(!err){
-            req.session.islogin = user_name;
+            req.session.islogin = user_msg.user_name;
             res.locals.islogin = req.session.islogin;
             res.cookie('islogin', res.locals.islogin, {
                 maxAge: 60000
