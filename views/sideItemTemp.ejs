@@ -3,7 +3,7 @@
 
 <% function paint(item){ %>
 <li class="folder-item cns-btn side-bar-item">
-	<div class="item-cont" data-level="<%= item.level %>" data-entity-id="<%= item.folder_id %>" style="padding-left:<%= (item.level-1)*10+30 %>px" title="<%= item.folder_name %>">
+	<div class="item-cont" data-level="<%= item.folder_level %>" data-entity-id="<%= item.folder_id %>" style="padding-left:<%= (item.folder_level-1)*10+30 %>px" title="<%= item.folder_name %>">
 		<span class="has-sub">
 		<% if(item.sub_list && item.sub_list.length){ %>
 			<i class="due-if arr-icon">&#xe637;</i>
@@ -16,9 +16,9 @@
 			<i class="due-if folder-icon">&#xe633;</i>
 		</span>
 		<% } %>
-		<span class="btn-text" style="width:<%= 85-(item.level-1)*10 %>px;"><%= item.folder_name %></span>
+		<span class="btn-text" style="width:<%= 85-(item.folder_level-1)*10 %>px;"><%= item.folder_name %></span>
 		<i class="due-if down-arr" data-entity-id="<%= item.folder_id %>">&#xe605;</i>
-		<input class="rename-cont" type="text" style="width:<%= 110-(item.level-1)*10 %>px;margin-left:<%= (item.level-1)*10+70 %>px" value="<%= item.folder_name %>">	
+		<input class="rename-cont" type="text" style="width:<%= 110-(item.folder_level-1)*10 %>px;margin-left:<%= (item.folder_level-1)*10+70 %>px" value="<%= item.folder_name %>">	
 	</div>
 	<% if (!item.sub_list || !item.sub_list.length){%>
 	<% return %>

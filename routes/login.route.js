@@ -17,7 +17,6 @@ router.route('/login').get(function(req, res) {
         if (result[0] === undefined) {
             res.send('没有该用户');
         } else {
-            console.log(result[0]);
             if (result[0].password === req.body.password) {
 
                 var user_msg = {
@@ -40,5 +39,5 @@ router.route('/login').get(function(req, res) {
 router.get('/logout', function(req, res) {
     res.clearCookie('islogin');
     req.session.destroy();
-    res.redirect('/');
+    res.redirect('/login');
 });

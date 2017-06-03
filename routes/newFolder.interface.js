@@ -32,7 +32,7 @@ router.post("/newFolder",function(req, res, next){
 		if(!err){
 			var item_data = {
 				folder_name: new_folder_msg.folder_name,
-				level: new_folder_msg.folder_level,
+				folder_level: new_folder_msg.folder_level,
 				folder_id: new_folder_msg.folder_id
 			};
 			var item_html = side_bar_item_temp({
@@ -45,10 +45,4 @@ router.post("/newFolder",function(req, res, next){
 			});
 		}
 	});
-
-	
-
-	
-
-
 });

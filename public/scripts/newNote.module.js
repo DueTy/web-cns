@@ -24,13 +24,14 @@ define("newNote",function(require,exports,module){
 			par_menu = _this.parents(".widget-menu"),
 			is_new_menu = par_menu.hasClass("new-menu")?true:false;
 
-		var menu_target_id = is_new_menu?"":par_menu.attr("data-target-id");
+		var menu_target_id = is_new_menu?"root":par_menu.attr("data-target-id");
 
 		new_note_type = _this.hasClass("new-note")?"note":"mk";
 
 		var post_data = {
 			is_new: true,
-			type: new_note_type
+			type: new_note_type,
+			belong_folder_id: menu_target_id
 		};
 		$.ajax({
 			url: "/newNote",

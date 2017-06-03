@@ -312,7 +312,7 @@ article {
   left: 20px;
 }
 .search-bar-main .item-title {
-  padding-left: 25px;
+  padding-left: 30px;
   line-height: 20px;
   height: 20px;
   overflow: hidden;
@@ -342,7 +342,6 @@ article {
   color: #82828c;
   margin: 6px 0 0;
   line-height: 20px;
-  height: 40px;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;

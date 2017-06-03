@@ -15,60 +15,99 @@ function getDateTime(){
 	return sd_time.format(new Date(), 'YYYY-MM-DD hh:mm:ss');
 }
 
-var side_test_data = [];
-for (var i = 0; i < 10; i++) {
-    var obj = {
-        folder_name: "笔记"+(i+1),
-        level: 1,
-        folder_id: uuidV4(),
-        sub_list:[
-        	// {
-        	// 	folder_name: "level21",
-        	// 	level:2,
-        	// 	folder_id: uuidV4(),
-        	// 	sub_list: [
-        	// 		{
-        	// 			folder_name: "level3",
-        	// 			level:3,
-        	// 			folder_id: uuidV4(),
-        	// 			sub_list:[]
-        	// 		}
-        	// 	]
-        	// },{
-        	// 	folder_name: "level22",
-        	// 	level:2,
-        	// 	folder_id: "folder"+(i+1)+"lv22",
-        	// 	sub_list: [
-        	// 	]
-        	// }
-        ]
-    };
-    side_test_data.push(obj); 
+function getDate(dateTime){
+    return sd_time.format(dateTime, "YYYY-MM-DD");
 }
 
-var search_test_data = [];
-for (var i = 0; i < 8; i++) {
-	var note_type = i%2===0?"note":"mk";
-	var obj = {
-        note_name: "日报 11.2"+(i+1),
-		note_type: note_type,
-		note_id: uuidV4()
-	};
-	search_test_data.push(obj);
+function calcuByteLength(text){
+    var bf = new Buffer(text);
+    var byte = bf.length,
+        byte_str = "";
+    if (byte>1024) {
+        byte_str = byte/1024+"KB";
+    }else{
+        byte_str = byte+"B";
+    }
+    return byte_str;
 }
+
 router.get('/home', function(req, res) {
+    var client = dbCon.connect(),
+        folder_list_data = [],
+        view_list_data = [];
+
     if (req.session.islogin) {
         res.locals.islogin = req.session.islogin;
     }
     if (req.cookies.islogin) {
         req.session.islogin = req.cookies.islogin;
     }
-    res.render('home', {
-        title: '首页',
-        user_msg: res.locals.islogin, 
-        side_data: side_test_data,
-        search_data: search_test_data
-    });
+    var user_msg = res.locals.islogin;
+   
+    dbCon.folderSelect(client, user_msg.user_id, function(err,result){
+        if(err) throw err;
+        if(!err){
+            var max_level = 1,
+                temp_arr = [],
+                temp_2d_arr = [];
+            for (var i = 0; i < result.length; i++) {                
+                if (result[i].folder_level>max_level) {
+                    max_level = result[i].folder_level;
+                }
+                result[i].sub_list = [];
+                temp_arr.push(result[i]);
+            }
+            for (var i = 0; i < max_level; i++) {
+                temp_2d_arr.push(new Array());
+            }
+            for (var i = 0; i < temp_arr.length; i++) {
+                temp_2d_arr[temp_arr[i].folder_level-1].push(temp_arr[i]);
+            }
+            arrRecur(folder_list_data, temp_2d_arr, 0, max_level, "root");
+
+            var note_select_opt = {
+                belong_folder_id: "root",
+                user_id: user_msg.user_id
+            };
+
+            dbCon.noteSelect(client, note_select_opt, function(err,result){
+                if(err) throw err;
+                if(!err){
+                    var view_list_data = result;
+                    res.render('home', {
+                        title: '首页',
+                        user_msg: res.locals.islogin, 
+                        side_data: folder_list_data,
+                        search_data: view_list_data
+                    });
+                }
+            });            
+        }
+    }); 
+
+    function arrRecur(sub_list, temp_2d_arr, cur_level, max_level, par_folder_id){
+        cur_level++;
+        if(cur_level>max_level){
+            return false;
+        }else{
+
+            for (var i = 0; i < temp_2d_arr[cur_level-1].length; i++) {
+                var this_folder = temp_2d_arr[cur_level-1][i];
+
+                if (this_folder.par_folder_id === par_folder_id) {
+                    sub_list.push(this_folder);
+                    arrRecur(
+                        this_folder.sub_list, 
+                        temp_2d_arr, 
+                        cur_level, 
+                        max_level,
+                        this_folder.folder_id
+                    );
+                }
+            }            
+            
+        }
+    }
 });
 
 /* GET home page. */
@@ -105,7 +144,6 @@ router.route('/login').get(function(req, res) {
         if (result[0] === undefined) {
             res.send('没有该用户');
         } else {
-            console.log(result[0]);
             if (result[0].password === req.body.password) {
 
                 var user_msg = {
@@ -128,7 +166,7 @@ router.route('/login').get(function(req, res) {
 router.get('/logout', function(req, res) {
     res.clearCookie('islogin');
     req.session.destroy();
-    res.redirect('/');
+    res.redirect('/login');
 });
 
 router.route('/reg').get(function(req, res) {
@@ -227,7 +265,7 @@ router.post("/newFolder",function(req, res, next){
 		if(!err){
 			var item_data = {
 				folder_name: new_folder_msg.folder_name,
-				level: new_folder_msg.folder_level,
+				folder_level: new_folder_msg.folder_level,
 				folder_id: new_folder_msg.folder_id
 			};
 			var item_html = side_bar_item_temp({
@@ -240,72 +278,98 @@ router.post("/newFolder",function(req, res, next){
 			});
 		}
 	});
-
-	
-
-	
-
-
 });
 
 var search_bar_item_temp = require("../views/searchItemTemp.ejs");
 
 router.post("/newNote", function(req, res, next){
+	var client = dbCon.connect();
+	var req_body = req.body;
 	
+	var user_msg = req.session.islogin;
 
-	var item_data = {
+	var created_at = getDateTime(),
+		modify_date = getDate(created_at);
+	var note_msg = {
+		note_id: uuidV4(),
 		note_name: "新建笔记",
-		note_type: req.body.type,
-		note_id: uuidV4()
+		note_type: req_body.type,
+		owner_id: user_msg.user_id,
+		belong_folder_id: req_body.belong_folder_id,
+		created_at: created_at,
+		modify_date: modify_date,
+		note_content: "",
+		note_size: "0B"
 	};
-	var item_html = search_bar_item_temp({
-		item: item_data
-	});
-	
-	res.send({
-		msg: "note inited success",
-		dom_data: item_html
-	});
 
+	var sql_param = [
+		note_msg.note_id,
+		note_msg.note_name,
+		note_msg.note_type,
+		note_msg.owner_id,
+		note_msg.belong_folder_id,
+		note_msg.created_at,
+		note_msg.modify_date,
+		note_msg.note_content,
+		note_msg.note_size
+	];
+
+	dbCon.noteInsert(client, sql_param, function(err,result){
+		if (err) throw err;
+		if(!err){
+			var item_data = {
+				note_name: note_msg.note_name,
+				note_type: note_msg.note_type,
+				note_id: note_msg.note_id,
+				modify_date: note_msg.modify_date,
+				note_size: note_msg.note_size
+			};
+			var item_html = search_bar_item_temp({
+				item: item_data
+			});
+
+			res.send({
+				msg: "note inited success",
+				dom_data: item_html
+			});
+		}
+	});
 });
 
 router.post("/getNoteList",function(req, res, next){
-	var req_folder = req.body.folder_id;
+	var client = dbCon.connect();
+	var req_folder = req.body.belong_folder_id;
 
 	var list_dom = "",
-		list_data = [
-			{
-				note_name: "日报 11.25",
-				note_type: "note",
-				note_id: uuidV4()
-			},{
-				note_name: "日报 11.26",
-				note_type: "mk",
-				note_id: uuidV4()
-			},{
-				note_name: "日报 11.27",
-				note_type: "note",
-				note_id: uuidV4()
-			},{
-				note_name: "日报 11.28",
-				note_type: "mk",
-				note_id: uuidV4()
+		list_data = [];
+
+	var user_msg = req.session.islogin,
+		sql_param = {
+			user_id: user_msg.user_id,
+			belong_folder_id: req_folder
+		};
+
+	dbCon.noteSelect(client, sql_param, function(err, result){
+		if(err) throw err;
+		if(!err){
+			list_data = result;
+			console.log(result);
+			for (var i = 0; i < list_data.length; i++) {
+				list_dom += search_bar_item_temp({
+					item: list_data[i]
+				});
 			}
-		]
 
-	for (var i = 0; i < list_data.length; i++) {
-		list_dom += search_bar_item_temp({
-			item: list_data[i]
-		});
-	}
+			res.send({
+				msg: "folder's notes get successfully",
+				list_dom: list_dom
+			});
+		}
+	});
 
-	res.send({
-		msg: "folder's notes get successfully",
-		list_dom: list_dom
-	})
+	
 
 });
-
 router.post("/rename",function(req, res, next){
 	var client = dbCon.connect();
 	var req_body = req.body;
@@ -313,10 +377,11 @@ router.post("/rename",function(req, res, next){
 	dbCon.renameFun(client,req_body,function(err,result){
 		if (err) throw err;
 		if(!err){
+			var is_affected = result.affectedRows>0?true:false;
 			res.send({
 				msg: req_body.entity_type+" rename success",
 				new_name: req_body.val,
-				is_affected: result.affctedRows>0?true:false
+				is_affected: is_affected
 			});
 		}
 	});

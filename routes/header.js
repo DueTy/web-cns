@@ -15,44 +15,18 @@ function getDateTime(){
 	return sd_time.format(new Date(), 'YYYY-MM-DD hh:mm:ss');
 }
 
-var side_test_data = [];
-for (var i = 0; i < 10; i++) {
-    var obj = {
-        folder_name: "笔记"+(i+1),
-        level: 1,
-        folder_id: uuidV4(),
-        sub_list:[
-        	// {
-        	// 	folder_name: "level21",
-        	// 	level:2,
-        	// 	folder_id: uuidV4(),
-        	// 	sub_list: [
-        	// 		{
-        	// 			folder_name: "level3",
-        	// 			level:3,
-        	// 			folder_id: uuidV4(),
-        	// 			sub_list:[]
-        	// 		}
-        	// 	]
-        	// },{
-        	// 	folder_name: "level22",
-        	// 	level:2,
-        	// 	folder_id: "folder"+(i+1)+"lv22",
-        	// 	sub_list: [
-        	// 	]
-        	// }
-        ]
-    };
-    side_test_data.push(obj); 
+function getDate(dateTime){
+    return sd_time.format(dateTime, "YYYY-MM-DD");
 }
 
-var search_test_data = [];
-for (var i = 0; i < 8; i++) {
-	var note_type = i%2===0?"note":"mk";
-	var obj = {
-        note_name: "日报 11.2"+(i+1),
-		note_type: note_type,
-		note_id: uuidV4()
-	};
-	search_test_data.push(obj);
+function calcuByteLength(text){
+    var bf = new Buffer(text);
+    var byte = bf.length,
+        byte_str = "";
+    if (byte>1024) {
+        byte_str = byte/1024+"KB";
+    }else{
+        byte_str = byte+"B";
+    }
+    return byte_str;
 }

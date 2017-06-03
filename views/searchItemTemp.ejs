@@ -12,11 +12,10 @@
 			<input class="rename-cont" type="text" value="<%= item.note_name %>">
 		</p>	
 		<p class="note-abstract">
-			web前端---已做: 双旦工行、建行雪花动画，建行提测正做: 建行bug修改要做: tffui页面更新
 		</p>
 		<p class="note-msg">
-			<span class="time-stamp">2017-3-3</span>
-			<span class="note-size">3KB</span>
+			<span class="time-stamp"><%= item.modify_date %></span>
+			<span class="note-size"><%= item.note_size %></span>
 		</p>
 	</div>	
 </li>

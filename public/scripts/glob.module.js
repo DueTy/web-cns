@@ -123,8 +123,8 @@ define(function(require){
  			_this = $(this),
  			folder_id = _this.attr("data-entity-id");
 
- 		post_data.folder_id = folder_id;
-
+ 		post_data.belong_folder_id = folder_id;
+ 		
  		$.ajax({
  			url: "/getNoteList",
  			type: "POST",
