@@ -1,5 +1,6 @@
 define("renameWidget",function(require,exports,module){
 	"use strict";
+    require("backLayer");
 
 	(function($){
 
@@ -57,16 +58,39 @@ define("renameWidget",function(require,exports,module){
     					dataType: "JSON",
     					data: post_data,
     					success:function(data){
-    						if(data && data.is_affected){
-    							this_par.find(".btn-text").eq(0).text(data.new_name);
-                                _this.val(data.new_name);
-    						}
+                            if(data.is_tooLong){
+                                var warn_msg = $(".warn-msg");
+                                warn_msg.find(".msg-text").text(data.msg);
+                                warn_msg.backLayer({
+                                    closeCall: warnCloseCall
+                                });
+                            }else{
+                                if(data && data.is_affected){
+                                    this_par.find(".btn-text").eq(0).text(data.new_name);
+                                    _this.val(data.new_name);
+                                }
+                                
+                            }
+    						
     					}
     				});
     			}
     			_this.removeClass(_ipt_show_cls);
     			_mask.removeClass(_blk_show_cls);
-    		}        	
+    		}     
+
+            function warnCloseCall(containerBox, layer){
+                var warn_interval,
+                    count_down = 1;
+                warn_interval = setInterval(function(){
+                    count_down--;
+                    if (count_down===0) {
+                        clearInterval(warn_interval);
+                        containerBox.hide();
+                        layer.remove();
+                    }
+                },1000);
+            }   	
         };
 
 	})(window.jQuery || require("jquery"));

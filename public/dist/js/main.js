@@ -7,7 +7,6 @@ seajs.config({
 });
 var deps = [
 	"jquery",
-	"editormd",
 	"js/all.min",
 	"ckeditor/ckeditor",
 	"editormd/plugins/link-dialog/link-dialog",
@@ -19,6 +18,7 @@ var deps = [
 	"editormd/plugins/goto-line-dialog/goto-line-dialog",
 	"editormd/plugins/help-dialog/help-dialog",
 	"editormd/plugins/html-entities-dialog/html-entities-dialog", 
-	"editormd/plugins/preformatted-text-dialog/preformatted-text-dialog"
+	"editormd/plugins/preformatted-text-dialog/preformatted-text-dialog",
+	"editormd"
 ]
 seajs.use(deps);

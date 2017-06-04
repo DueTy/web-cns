@@ -16,7 +16,8 @@ router.post("/newNote", function(req, res, next){
 		owner_id: user_msg.user_id,
 		belong_folder_id: req_body.belong_folder_id,
 		created_at: created_at,
-		modify_date: modify_date,
+		modify_time: created_at,
+		show_modify: modify_date,
 		note_content: "",
 		note_size: "0B"
 	};
@@ -28,7 +29,8 @@ router.post("/newNote", function(req, res, next){
 		note_msg.owner_id,
 		note_msg.belong_folder_id,
 		note_msg.created_at,
-		note_msg.modify_date,
+		note_msg.modify_time,
+		note_msg.show_modify,
 		note_msg.note_content,
 		note_msg.note_size
 	];
@@ -72,7 +74,6 @@ router.post("/getNoteList",function(req, res, next){
 		if(err) throw err;
 		if(!err){
 			list_data = result;
-			console.log(result);
 			for (var i = 0; i < list_data.length; i++) {
 				list_dom += search_bar_item_temp({
 					item: list_data[i]

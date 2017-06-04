@@ -1,5 +1,5 @@
 <li class="view-item">
-	<div class="item-cont" data-entity-id="<%= item.note_id %>">
+	<div class="item-cont" data-entity-id="<%= item.note_id %>" data-type="<%= item.note_type %>">
 		<p class="item-title">
 			<% if(item.note_type){ %>
 			<% if(item.note_type === "mk"){ %>
@@ -14,7 +14,7 @@
 		<p class="note-abstract">
 		</p>
 		<p class="note-msg">
-			<span class="time-stamp"><%= item.modify_date %></span>
+			<span class="time-stamp"><%= item.show_modify %></span>
 			<span class="note-size"><%= item.note_size %></span>
 		</p>
 	</div>	

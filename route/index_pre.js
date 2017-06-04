@@ -43,7 +43,7 @@ router.get('/home', function(req, res) {
         req.session.islogin = req.cookies.islogin;
     }
     var user_msg = res.locals.islogin;
-   
+
     dbCon.folderSelect(client, user_msg.user_id, function(err,result){
         if(err) throw err;
         if(!err){
@@ -117,13 +117,11 @@ router.get('/', function(req, res) {
     }
     if (req.session.islogin) {
         res.locals.islogin = req.session.islogin;
+        res.redirect("/home");
+    }else{
+        res.locals.islogin = req.session.islogin;
+        res.redirect("/login");
     }
-    res.render('index', {
-        title: '首页',
-        user: res.locals.islogin,       
-        side_data: side_test_data,
-        search_data: search_test_data
-    });
 });
 router.route('/login').get(function(req, res) {
     if (req.session.islogin) {
@@ -231,6 +229,127 @@ router.route('/regMsg').get(function(req, res){
 });
 
 
+router.post("/delFolder",function(req, res, next){
+	var client = dbCon.connect();
+	var req_body = req.body;
+
+	var start_level;
+
+	start_level = req_body.folder_level,
+	start_folder_id = req_body.folder_id;
+
+
+    var user_msg = req.session.islogin;
+
+    var delete_folders = [];
+
+    delete_folders.push(start_folder_id);
+
+    var folder_affected_rows = 0,
+        note_affected_rows = 0;
+
+	dbCon.folderSelect(client, user_msg.user_id, function(err,result){
+		if(err) throw err;
+		if(!err){
+			var max_level = 1,
+                temp_arr = [],
+                temp_2d_arr = [];
+            for (var i = 0; i < result.length; i++) {                
+                if (result[i].folder_level>max_level) {
+                    max_level = result[i].folder_level;
+                }
+                result[i].sub_list = [];
+                temp_arr.push(result[i]);
+            }
+            for (var i = 0; i < max_level; i++) {
+                temp_2d_arr.push(new Array());
+            }
+            for (var i = 0; i < temp_arr.length; i++) {
+                temp_2d_arr[temp_arr[i].folder_level-1].push(temp_arr[i]);
+            }
+            arrRecur(
+                delete_folders, 
+                temp_2d_arr, 
+                start_level, 
+                max_level, 
+                start_folder_id
+            );
+            dbCon.folderDel(client, delete_folders, function(err, result){
+                if(err) throw err;
+                if(!err){
+                    folder_affected_rows = result.affectedRows;
+                    var set_str = "",
+                        tail = ",";
+                    for (var i = 0; i < delete_folders.length; i++) {
+                        if(i===delete_folders.length-1){
+                            tail = "";
+                        }
+                        set_str+= "'"+delete_folders[i]+"'"+tail;
+                    }
+                    var condition = " belong_folder_id in ("+set_str+")";
+                    dbCon.noteDel(client, condition, function(err, result){
+                        if(err) throw err;
+                        if(!err){
+                            note_affected_rows = result.affectedRows;
+                            if(folder_affected_rows===delete_folders.length){
+                                res.send({
+                                    is_delete_all: true,
+                                    msg: "删除成功"
+                                });
+                            }else{
+                                res.send({
+                                    is_delete_all: false,
+                                    msg: "删除失败"
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+		}
+	});
+	function arrRecur(list, temp_2d_arr, cur_level, max_level, par_folder_id){
+		cur_level++;
+        if(cur_level>max_level){
+            return false;
+        }else{
+            for (var i = 0; i < temp_2d_arr[cur_level-1].length; i++) {
+                var this_folder = temp_2d_arr[cur_level-1][i];
+
+                if (this_folder.par_folder_id === par_folder_id) {
+                    list.push(this_folder.folder_id);
+                    arrRecur(
+                        list, 
+                        temp_2d_arr, 
+                        cur_level, 
+                        max_level,
+                        this_folder.folder_id
+                    );
+                }
+            }            
+            
+        }
+	}
+
+});
+router.post("/delNote",function(req, res, next){
+	var client = dbCon.connect();
+	var req_body = req.body;
+
+	var condition = "note_id='"+req_body.note_id+"'";
+
+	dbCon.noteDel(client, condition, function(err, result){
+		if(err) throw err;
+		if (!err) {
+			var is_delete = result.affectedRows>0;
+			res.send({
+				msg: "删除成功",
+				is_delete: is_delete
+			});
+		}
+	})
+
+});
 var side_bar_item_temp = require("../views/sideItemTemp.ejs");
 
 router.post("/newFolder",function(req, res, next){
@@ -243,13 +362,16 @@ router.post("/newFolder",function(req, res, next){
 	if(req.session.islogin){
 		user_msg = req.session.islogin;
 	}
+	var created_at = getDateTime(),
+		modify_time = created_at;
 	var new_folder_msg = {
 		folder_id: uuidV4(),
 		folder_name: "新建文件夹",
 		folder_level: parseInt(req_body.par_folder_level)+1,
 		belong_id: user_msg.user_id,
 		par_folder_id: req_body.par_folder_id,
-		created_at: getDateTime()
+		created_at: getDateTime(),
+		modify_time: modify_time
 	};
 	var sql_param = [
 		new_folder_msg.folder_id,
@@ -257,7 +379,8 @@ router.post("/newFolder",function(req, res, next){
 		new_folder_msg.folder_level,
 		new_folder_msg.belong_id,
 		new_folder_msg.par_folder_id,
-		new_folder_msg.created_at
+		new_folder_msg.created_at,
+		new_folder_msg.modify_time
 	];
 
 	dbCon.folderInsert(client, sql_param, function(err){
@@ -297,7 +420,8 @@ router.post("/newNote", function(req, res, next){
 		owner_id: user_msg.user_id,
 		belong_folder_id: req_body.belong_folder_id,
 		created_at: created_at,
-		modify_date: modify_date,
+		modify_time: created_at,
+		show_modify: modify_date,
 		note_content: "",
 		note_size: "0B"
 	};
@@ -309,7 +433,8 @@ router.post("/newNote", function(req, res, next){
 		note_msg.owner_id,
 		note_msg.belong_folder_id,
 		note_msg.created_at,
-		note_msg.modify_date,
+		note_msg.modify_time,
+		note_msg.show_modify,
 		note_msg.note_content,
 		note_msg.note_size
 	];
@@ -353,7 +478,6 @@ router.post("/getNoteList",function(req, res, next){
 		if(err) throw err;
 		if(!err){
 			list_data = result;
-			console.log(result);
 			for (var i = 0; i < list_data.length; i++) {
 				list_dom += search_bar_item_temp({
 					item: list_data[i]
@@ -374,17 +498,33 @@ router.post("/rename",function(req, res, next){
 	var client = dbCon.connect();
 	var req_body = req.body;
 
-	dbCon.renameFun(client,req_body,function(err,result){
-		if (err) throw err;
-		if(!err){
-			var is_affected = result.affectedRows>0?true:false;
-			res.send({
-				msg: req_body.entity_type+" rename success",
-				new_name: req_body.val,
-				is_affected: is_affected
-			});
-		}
-	});
+	var modify_time = getDateTime();
+	if(req_body.entity_type==="note"){
+		req_body.show_modify = getDate(modify_time);
+	}
+	req_body.modify_time = modify_time;
+
+	if (req_body.val.length>20) {
+		res.send({
+			msg: "名字太长了，要不短点？",
+			is_tooLong: true
+		});
+	}else{
+		dbCon.renameFun(client,req_body,function(err,result){
+			if (err) throw err;
+			if(!err){
+				var is_affected = result.affectedRows>0?true:false;
+				res.send({
+					msg: req_body.entity_type+" rename success",
+					is_tooLong: false,
+					new_name: req_body.val,
+					is_affected: is_affected
+				});
+			}
+		});
+	}
+
+	
 });
 
 module.exports = router;

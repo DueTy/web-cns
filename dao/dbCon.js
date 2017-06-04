@@ -37,7 +37,7 @@ function userInsert(client, user_msg, callback) {
     });
 }
 function folderInsert(client, folder_msg, callback) {
-    client.query('insert into folder value(?,?,?,?,?,?)',folder_msg,function(err,result){
+    client.query('insert into folder value(?,?,?,?,?,?,?)',folder_msg,function(err,result){
         if (err) {
             console.log("error:" + err.message);
         }
@@ -45,7 +45,7 @@ function folderInsert(client, folder_msg, callback) {
     });
 }
 function noteInsert(client, note_msg, callback) {
-    client.query('insert into note value(?,?,?,?,?,?,?,?,?)', note_msg,function(err,result){
+    client.query('insert into note value(?,?,?,?,?,?,?,?,?,?)', note_msg,function(err,result){
         if (err) {
             console.log("error:" + err.message);
         }
@@ -55,7 +55,7 @@ function noteInsert(client, note_msg, callback) {
 
 function folderSelect(client, owner, callback){
     var sql = "select folder_id,folder_name,folder_level,par_folder_id from folder where belong_id='"
-    +owner+"' order by created_at DESC";
+    +owner+"' order by folder_name ASC";
     client.query(sql,function(err,result){
         if (err) {
             console.log("error:" + err.message);
@@ -66,9 +66,9 @@ function folderSelect(client, owner, callback){
 function noteSelect(client, select_opt, callback){
     var belong_folder = select_opt.belong_folder_id,
         owner = select_opt.user_id;
-    var sql = "select note_id,note_name,note_type,modify_date,note_size "+
+    var sql = "select note_id,note_name,note_type,show_modify,note_size "+
     " from note where belong_folder_id='"+belong_folder+"' and owner_id='"+owner+
-    "' order by created_at DESC";
+    "' order by modify_time DESC";
     client.query(sql,function(err,result){
         if (err) {
             console.log("error:" + err.message);
@@ -77,12 +77,49 @@ function noteSelect(client, select_opt, callback){
     });
 
 }
+function folderDel(client, del_arr, callback){
+    var set_str = "",
+        tail = ",";
+    for (var i = 0; i < del_arr.length; i++) {
+        if(i===del_arr.length-1){
+            tail = "";
+        }
+        set_str+= "'"+del_arr[i]+"'"+tail;
+    }
+    var sql = "delete from folder where folder_id in ("+set_str+")";
+    client.query(sql,function(err,result){
+        if (err) {
+            console.log("error:" + err.message);
+        }
+        callback(err,result);
+    });
+}
+
+function noteDel(client, condition, callback){
+    var sql = "delete from note where "+condition;
+
+    client.query(sql,function(err,result){
+        if (err) {
+            console.log("error:" + err.message);
+        }
+        callback(err,result);
+    });
+}
 
 function renameFun(client, rename_msg, callback) {
     var type = rename_msg.entity_type,
         val = rename_msg.val,
-        id = rename_msg.entity_id;
-    var sql = "update "+tables[type]+" set "+type+"_name='"+val+"' where "+type+"_id='"+id+"'";
+        id = rename_msg.entity_id,
+        modify_time = rename_msg.modify_time;
+        set_val = "";
+    if (type === "note") {
+        set_val = " set note_name='"+val+"',modify_time='"+
+        modify_time+"',show_modify='"+rename_msg.show_modify+"'";
+    }else{
+        set_val = " set folder_name='"+val+"',modify_time='"+modify_time+"'";
+    }
+    var sql = "update "+tables[type]+set_val+" where "+type+"_id='"+id+"'";
+    console.log(sql);
     client.query(sql,function(err,result){
         if (err) {
             console.log("error:" + err.message);
@@ -100,5 +137,7 @@ exports.folderInsert = folderInsert;
 exports.noteInsert = noteInsert;
 exports.folderSelect = folderSelect;
 exports.noteSelect = noteSelect;
+exports.folderDel = folderDel;
+exports.noteDel = noteDel;
 exports.renameFun = renameFun;
 

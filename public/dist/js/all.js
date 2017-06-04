@@ -1,3 +1,99 @@
+define("delFolder",function(require,exports,module){
+	"use strict";
+
+	var folder_menu = $(".folder-menu"),
+		del_folder1 = folder_menu.eq(0).find(".delete"),
+		del_folder2 = folder_menu.eq(1).find(".delete"),
+		folder_item_list = $(".side-bar .folder-item-list"),
+		list_container = folder_item_list.find(".mCSB_container");
+
+	del_folder1.on("click", delAjax);
+
+	del_folder2.on("click", delAjax);
+
+	function delAjax(){
+		
+		var par_menu = $(this).parent(".widget-menu");
+
+		var folder_id = par_menu.attr("data-target-id"),
+			folder = list_container
+						.find("div[data-entity-id="+folder_id+"]");
+
+		var is_par_has_sub = folder.parent().parent().hasClass("sub-list");
+
+		var post_data = {
+			folder_id: folder_id,
+			folder_level: folder.attr("data-level")
+		};
+
+		$.ajax({
+			url: "/delFolder",
+			type: "POST",
+			dataType: "JSON",
+			data: post_data,
+			success: function(data){
+				if (data.is_delete_all&&is_par_has_sub) {
+					var bro_num = folder.parent(".folder-item").siblings().length;
+					if (bro_num===0) {
+						var par_list = folder.parent(".folder-item").parent(".sub-list"),
+							prev_cont = par_list.prev(".item-cont");
+						console.log(prev_cont);
+						prev_cont.removeClass("folder-open");
+						prev_cont.children(".has-sub").find(".arr-icon").remove();
+					}
+					folder.remove();					
+				}
+			}
+
+		});
+	}
+});
+define("delNote",function(require,exports,module){
+	"use strict";
+	
+	var note_menu = $(".note-detail-menu"),
+		del_note = note_menu.find(".delete"),
+		view_list = $(".view-list"),
+		list_container = view_list.find(".mCSB_container");
+
+	del_note.on("click", noteDelAjax);
+
+	var empty_folder = ["<div class=\"empty-msg\">",
+						"<i class=\"due-if\">&#xe8ea;</i><br>",
+						"空文件夹",
+						"</div>"].join("");
+
+	function noteDelAjax(){
+
+		var note_id = note_menu.attr("data-target-id"),
+			note = view_list.find("div[data-entity-id="+note_id+"]");
+
+		var post_data = {
+			note_id: note_id
+		};
+		$.ajax({
+			url: "/delNote",
+			type: "POST",
+			dataType: "JSON",
+			data: post_data,
+			success: function(data){
+				var bro_num = note.parent(".view-item").siblings().length;
+				if(bro_num===0){
+					list_container.html("");
+					list_container.append(empty_folder);
+					var cont_empty= list_container.find(".empty-msg");
+					cont_empty.css("margin-top",view_list.height()/2-20+"px");
+					$(window).on("resize", function() {
+						cont_empty.css("margin-top",view_list.height()/2-20+"px");
+					});
+				}
+				note.remove();
+			}
+		});
+	}
+
+
+});
 define("fullPage",function(require,exports,module){
 	"use strict";
 	(function($){
@@ -49,7 +145,6 @@ define(function(require){
 	require("customScrollBar");
 	require("widgetMenu");
 	require("renameWidget");
-	var editormd = require("editormd");
 
 	var main_box = $(".main-box"),
 	side_close = $(".side-close"),
@@ -61,10 +156,13 @@ define(function(require){
 
 	side_close.on("click", sideBarOpt);
 	side_open.on("click", sideBarOpt);
-	edit_cont.fullHeight();
 
-	view_list.fullHeight();
-	folder_item_list.fullHeight();
+	if (edit_cont[0]) {
+		edit_cont.fullHeight();
+		view_list.fullHeight();
+		folder_item_list.fullHeight();
+		require("noteEdit");
+	}	
 	
 	var scroll_opts = {
 		mouseWheelPixels: 250,
@@ -75,57 +173,19 @@ define(function(require){
 	view_list.mCustomScrollbar(scroll_opts);
 	folder_item_list.mCustomScrollbar(scroll_opts);
 
-	var folder_item_list = $(".folder-item-list"),
-		view_list = $(".view-list");
+	folder_item_list = $(".folder-item-list");
+	view_list = $(".view-list");
 	
 	require("newNote");
 	require("newFolder");
+	require("delFolder");
+	require("delNote");
 
 
 	function sideBarOpt(){
 		main_box.toggleClass("page-side-close");
 		$(window).trigger("resize");
-	}
-	window.CKEDITOR.replace( 'editor' );
-	// testEditor = editormd("editor", {
- //        width: "100%",
- //        height: "100%",
- //        path : '/dist/editormd/lib/',
- //        codeFold : true,
- //        //syncScrolling : false,
- //        saveHTMLToTextarea : true,    // 保存 HTML 到 Textarea
- //        searchReplace : true,
- //        //watch : false,                // 关闭实时预览
- //        htmlDecode : "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启    
- //        //toolbar  : false,             //关闭工具栏
- //        //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
- //        emoji : true,
- //        taskList : true,
- //        tocm            : true,         // Using [TOCM]
- //        tex : true,                   // 开启科学公式TeX语言支持，默认关闭
- //        flowChart : true,             // 开启流程图支持，默认关闭
- //        sequenceDiagram : true,       // 开启时序/序列图支持，默认关闭,
- //        //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true
- //        //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true
- //        //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true
- //        //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1
- //        //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
- //        imageUpload : true,
- //        imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
- //        imageUploadURL : "./php/upload.php",
- //        onload : function() {
- //            console.log('onload', this);
- //            //this.fullscreen();
- //            //this.unwatch();
- //            //this.watch().fullscreen();
-
- //            //this.setMarkdown("#PHP");
- //            //this.width("100%");
- //            //this.height(480);
- //            //this.resize("100%", 640);
- //        }
- //    });
- 	
+	} 	
 
  	$(".new-menu").widgetMenu({
 		tri_par: ".side-bar .new-btn",
@@ -162,8 +222,38 @@ define(function(require){
  		sub_list.toggleClass("list-open");
  	});
 
- 	folder_item_list.on("click", ".item-cont", function() {
+ 	folder_item_list.on("click", ".item-cont", noteListAjax);
+
+ 	var folder_list_title = $(".side-bar .folder-list-title");
+ 	folder_list_title.on("click", noteListAjax);
+ 	folder_list_title.trigger("click");
+
+ 	view_list.on("click", ".item-cont", function() {
  		var post_data = {},
+ 			_this = $(this),
+ 			note_id = _this.attr("data-entity-id");		
+ 	});
+
+	var new_btn = $(".side-bar .new-btn"),
+		new_menu = $(".side-bar .new-menu");	
+
+	
+	function renameCall(menu){
+		var rename_btn = menu.find(".rename");
+
+		rename_btn.on("click", function() {
+			var target_id = menu.attr("data-target-id");
+			var target = $("div[data-entity-id="+target_id+"]");
+			target.find(".rename-cont").renameWidget();
+		});
+	}
+	var empty_folder = ["<div class=\"empty-msg\">",
+						"<i class=\"due-if\">&#xe8ea;</i><br>",
+						"空文件夹",
+						"</div>"].join("");
+
+	function noteListAjax(){
+		var post_data = {},
  			_this = $(this),
  			folder_id = _this.attr("data-entity-id");
 
@@ -177,56 +267,32 @@ define(function(require){
  			success:function(data){
  				var list_dom = "";
  				if (data) {
- 					list_dom = data.list_dom;
+ 					var is_empty = data.list_dom==="";
+
+ 					list_dom = is_empty?empty_folder:data.list_dom;
+
  					var list_container = view_list.find(".mCSB_container");
  					list_container.html("");
  					list_container.append(list_dom);
+
+ 					if (is_empty) {
+ 						var cont_empty= list_container.find(".empty-msg");
+ 						cont_empty.css("margin-top",view_list.height()/2-20+"px");
+ 						$(window).on("resize", function() {
+ 							cont_empty.css("margin-top",view_list.height()/2-20+"px");
+ 						});
+ 					}
+
  					view_list.mCustomScrollbar("update");
  				}
  				view_list.mCustomScrollbar("scrollTo","top");
  			}
  		});	
+ 		folder_list_title.removeClass("title-selected");
  		folder_item_list.find(".item-cont").removeClass("selected");
- 		_this.addClass("selected");
- 	});
-
- 	view_list.on("click", ".item-cont", function() {
- 		var post_data = {},
- 			_this = $(this),
- 			note_id = _this.attr("data-entity-id"); 		
- 	});
-
-
-	var new_btn = $(".side-bar .new-btn"),
-		new_menu = $(".side-bar .new-menu");
-	
-	
-
-	window.CKEDITOR.on("instanceReady", afterEditorInited);
-
-
-	function afterEditorInited(){
-		var cke_contents = $(".cke_contents"),
-			edit_cont = $(".edit-cont");
-
-		cke_contents.fullHeight({
-			extra:["cke_bottom"]
-		});
-		edit_cont.fullHeight();
-		new_btn.on("click", function() {
-		
-			// CKEDITOR.instances.editor.setData("<p>听，海哭的声音。。。</p>");
-			console.log(CKEDITOR.instances.editor.getData());
-		});
-	}
-	function renameCall(menu){
-		var rename_btn = menu.find(".rename");
-
-		rename_btn.on("click", function() {
-			var target_id = menu.attr("data-target-id");
-			var target = $("div[data-entity-id="+target_id+"]");
-			target.find(".rename-cont").renameWidget();
-		});
+ 		var is_title_folder = _this.hasClass("folder-list-title")?true:false;
+ 		is_title_folder?_this.addClass("title-selected"):_this.addClass("selected");
+ 		
 	}
 });
 
@@ -240,7 +306,7 @@ define("backLayer",function(require,exports,module){
         $.fn.backLayer = function(opts) {
 
         	var defaults = {
-        		call:{},
+        		closeCall:{},
         		bg_color: "#000"
         	};
 
@@ -250,7 +316,8 @@ define("backLayer",function(require,exports,module){
     		var isIE6 = isIE && !window.XMLHttpRequest;
     		var position = !isIE6 ? "fixed" : "absolute";
     		var containerBox = $(this);
-    		var bg_color = settings.bg_color;
+    		var bg_color = settings.bg_color,
+                closeCall = settings.closeCall;
 
         	return this.each(function(){
         		containerBox.css({
@@ -285,6 +352,13 @@ define("backLayer",function(require,exports,module){
         		$("window").resize(function() {
         			layer_iestyle();
         		});
+
+                // layer.one("click", function() {                    
+                //     containerBox.hide();
+                //     layer.remove();
+                // });
+                closeCall(containerBox,layer);
+
         	});
         
 
@@ -1416,13 +1490,16 @@ define("newFolder",function(require,exports,module){
 
 	var root_new_folder = $(".bar-top .new-folder"),
 		folder_menu = $(".folder-menu"),
-		list_new_folder = folder_menu.find(".new-folder"),
+		list_new_folder1 = folder_menu.eq(0).find(".new-folder"),
+		list_new_folder2 = folder_menu.eq(1).find(".new-folder"),
 		folder_item_list = $(".side-bar .folder-item-list"),
 		list_container = folder_item_list.find(".mCSB_container");
 	
 	root_new_folder.on("click", rootAjax);
 
-	list_new_folder.on("click", itemAjax);
+	list_new_folder1.on("click", itemAjax);
+
+	list_new_folder2.on("click", itemAjax);
 
 	function rootAjax(data){
 		var post_data = {
@@ -1458,6 +1535,7 @@ define("newFolder",function(require,exports,module){
 		var post_data = {
 			is_new: true
 		};
+		var par_menu = $(this).parent(".folder-menu");
 
 		var has_sub_icon = ["<i class=\"due-if arr-icon\">&#xe637;</i>"].join(""),
 			open_arr_dom = ["<span class=\"has-sub-open\">",
@@ -1467,7 +1545,7 @@ define("newFolder",function(require,exports,module){
 			sub_list_dom = ["<ul class=\"sub-list\">",
 							"</ul>"].join("");
 
-		var par_folder_id = (folder_menu).attr("data-target-id"),
+		var par_folder_id = par_menu.attr("data-target-id"),
 			par_folder = list_container
 						.find("div[data-entity-id="+par_folder_id+"]");
 
@@ -1527,8 +1605,10 @@ define("newNote",function(require,exports,module){
 	var root_new_note = $(".new-menu .new-note"),
 		root_new_mk = $(".new-menu .new-mk"),
 		folder_menu = $(".folder-menu"),
-		folder_new_note = folder_menu.find(".new-note"),
-		folder_new_mk = folder_menu.find(".new-mk"),
+		folder_new_note1 = folder_menu.eq(0).find(".new-note"),
+		folder_new_mk1 = folder_menu.eq(0).find(".new-mk"),
+		folder_new_note2 = folder_menu.eq(1).find(".new-note"),
+		folder_new_mk2 = folder_menu.eq(1).find(".new-mk"),
 		folder_item_list = $(".folder-item-list"),
 		view_list = $(".view-list"),
 		list_container = view_list.find(".mCSB_container");
@@ -1537,14 +1617,18 @@ define("newNote",function(require,exports,module){
 
 	root_new_mk.on("click", newNote);
 
-	folder_new_note.on("click", newNote);
+	folder_new_note1.on("click", newNote);
 
-	folder_new_mk.on("click", newNote);
+	folder_new_mk1.on("click", newNote);
+
+	folder_new_note2.on("click", newNote);
+
+	folder_new_mk2.on("click", newNote);
 
 	function newNote(){
 		var _this = $(this),
 			new_note_type = "",
-			par_menu = _this.parents(".widget-menu"),
+			par_menu = _this.parent(".widget-menu"),
 			is_new_menu = par_menu.hasClass("new-menu")?true:false;
 
 		var menu_target_id = is_new_menu?"root":par_menu.attr("data-target-id");
@@ -1582,8 +1666,92 @@ define("newNote",function(require,exports,module){
 	}
 
 });
+define("noteEdit", function(require,exports,module){
+	"use strict";
+	var editormd = require("editormd");
+
+	var editor_init = {
+		mkEditorInit: function(data,save_btn){
+			var testEditor = editormd("editor", {
+		        width: "100%",
+		        height: "100%",
+		        path : '/dist/editormd/lib/',
+		        codeFold : true,
+		        //syncScrolling : false,
+		        saveHTMLToTextarea : true,    // 保存 HTML 到 Textarea
+		        searchReplace : true,
+		        //watch : false,                // 关闭实时预览
+		        htmlDecode : "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启    
+		        //toolbar  : false,             //关闭工具栏
+		        //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
+		        emoji : true,
+		        taskList : true,
+		        tocm            : true,         // Using [TOCM]
+		        tex : true,                   // 开启科学公式TeX语言支持，默认关闭
+		        flowChart : true,             // 开启流程图支持，默认关闭
+		        sequenceDiagram : true,       // 开启时序/序列图支持，默认关闭,
+		        //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true
+		        //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true
+		        //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true
+		        //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1
+		        //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
+		        imageUpload : true,
+		        imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+		        imageUploadURL : "./php/upload.php",
+		        onload : function() {
+		            console.log('onload', this);
+		            //this.fullscreen();
+		            //this.unwatch();
+		            //this.watch().fullscreen();
+
+		            //this.setMarkdown("#PHP");
+		            //this.width("100%");
+		            //this.height(480);
+		            //this.resize("100%", 640);
+		        }
+		    });
+		},
+		noteEditorInit: function(data,save_btn){
+			window.CKEDITOR.replace("editor");
+
+			window.CKEDITOR.on("instanceReady", ckEditorReady);
+
+			function ckEditorReady(){
+				var cke_contents = $(".cke_contents"),
+				edit_cont = $(".edit-cont");
+
+				cke_contents.fullHeight({
+					extra:["cke_bottom"]
+				});
+				edit_cont.fullHeight();
+			}
+		}
+	};
+	var edit_bar = $(".edit-bar"),
+		view_list = $(".view-list"),
+		save_btn = edit_bar.find(".save-btn"),
+		share_btn = edit_bar.find(".share-btn"),
+		edit_cont = $(".edit-cont");
+
+	view_list.on("click", ".view-item", function() {
+		var this_note = $(this).find(".item-cont"),
+			note_id = this_note.attr("data-entity-id"),
+			note_type = this_note.attr("data-type"),
+			editorInitKey = note_type+"EditorInit",
+			editor_dom = ["<div id=\"editor\"></div>"].join("");
+
+		save_btn.attr("data-entity-id", note_id);
+		share_btn.attr("data-entity-id", note_id);
+
+		edit_cont.html("").append(editor_dom);
+
+		var editorInit = editor_init[editorInitKey];
+		editorInit();		
+	});
+});
 define("renameWidget",function(require,exports,module){
 	"use strict";
+    require("backLayer");
 
 	(function($){
 
@@ -1641,16 +1809,39 @@ define("renameWidget",function(require,exports,module){
     					dataType: "JSON",
     					data: post_data,
     					success:function(data){
-    						if(data && data.is_affected){
-    							this_par.find(".btn-text").eq(0).text(data.new_name);
-                                _this.val(data.new_name);
-    						}
+                            if(data.is_tooLong){
+                                var warn_msg = $(".warn-msg");
+                                warn_msg.find(".msg-text").text(data.msg);
+                                warn_msg.backLayer({
+                                    closeCall: warnCloseCall
+                                });
+                            }else{
+                                if(data && data.is_affected){
+                                    this_par.find(".btn-text").eq(0).text(data.new_name);
+                                    _this.val(data.new_name);
+                                }
+                                
+                            }
+    						
     					}
     				});
     			}
     			_this.removeClass(_ipt_show_cls);
     			_mask.removeClass(_blk_show_cls);
-    		}        	
+    		}     
+
+            function warnCloseCall(containerBox, layer){
+                var warn_interval,
+                    count_down = 1;
+                warn_interval = setInterval(function(){
+                    count_down--;
+                    if (count_down===0) {
+                        clearInterval(warn_interval);
+                        containerBox.hide();
+                        layer.remove();
+                    }
+                },1000);
+            }   	
         };
 
 	})(window.jQuery || require("jquery"));

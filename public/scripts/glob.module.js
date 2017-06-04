@@ -5,7 +5,6 @@ define(function(require){
 	require("customScrollBar");
 	require("widgetMenu");
 	require("renameWidget");
-	var editormd = require("editormd");
 
 	var main_box = $(".main-box"),
 	side_close = $(".side-close"),
@@ -17,10 +16,13 @@ define(function(require){
 
 	side_close.on("click", sideBarOpt);
 	side_open.on("click", sideBarOpt);
-	edit_cont.fullHeight();
 
-	view_list.fullHeight();
-	folder_item_list.fullHeight();
+	if (edit_cont[0]) {
+		edit_cont.fullHeight();
+		view_list.fullHeight();
+		folder_item_list.fullHeight();
+		require("noteEdit");
+	}	
 	
 	var scroll_opts = {
 		mouseWheelPixels: 250,
@@ -31,57 +33,19 @@ define(function(require){
 	view_list.mCustomScrollbar(scroll_opts);
 	folder_item_list.mCustomScrollbar(scroll_opts);
 
-	var folder_item_list = $(".folder-item-list"),
-		view_list = $(".view-list");
+	folder_item_list = $(".folder-item-list");
+	view_list = $(".view-list");
 	
 	require("newNote");
 	require("newFolder");
+	require("delFolder");
+	require("delNote");
 
 
 	function sideBarOpt(){
 		main_box.toggleClass("page-side-close");
 		$(window).trigger("resize");
-	}
-	window.CKEDITOR.replace( 'editor' );
-	// testEditor = editormd("editor", {
- //        width: "100%",
- //        height: "100%",
- //        path : '/dist/editormd/lib/',
- //        codeFold : true,
- //        //syncScrolling : false,
- //        saveHTMLToTextarea : true,    // 保存 HTML 到 Textarea
- //        searchReplace : true,
- //        //watch : false,                // 关闭实时预览
- //        htmlDecode : "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启    
- //        //toolbar  : false,             //关闭工具栏
- //        //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
- //        emoji : true,
- //        taskList : true,
- //        tocm            : true,         // Using [TOCM]
- //        tex : true,                   // 开启科学公式TeX语言支持，默认关闭
- //        flowChart : true,             // 开启流程图支持，默认关闭
- //        sequenceDiagram : true,       // 开启时序/序列图支持，默认关闭,
- //        //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true
- //        //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true
- //        //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true
- //        //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1
- //        //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
- //        imageUpload : true,
- //        imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
- //        imageUploadURL : "./php/upload.php",
- //        onload : function() {
- //            console.log('onload', this);
- //            //this.fullscreen();
- //            //this.unwatch();
- //            //this.watch().fullscreen();
-
- //            //this.setMarkdown("#PHP");
- //            //this.width("100%");
- //            //this.height(480);
- //            //this.resize("100%", 640);
- //        }
- //    });
- 	
+	} 	
 
  	$(".new-menu").widgetMenu({
 		tri_par: ".side-bar .new-btn",
@@ -118,8 +82,38 @@ define(function(require){
  		sub_list.toggleClass("list-open");
  	});
 
- 	folder_item_list.on("click", ".item-cont", function() {
+ 	folder_item_list.on("click", ".item-cont", noteListAjax);
+
+ 	var folder_list_title = $(".side-bar .folder-list-title");
+ 	folder_list_title.on("click", noteListAjax);
+ 	folder_list_title.trigger("click");
+
+ 	view_list.on("click", ".item-cont", function() {
  		var post_data = {},
+ 			_this = $(this),
+ 			note_id = _this.attr("data-entity-id");		
+ 	});
+
+	var new_btn = $(".side-bar .new-btn"),
+		new_menu = $(".side-bar .new-menu");	
+
+	
+	function renameCall(menu){
+		var rename_btn = menu.find(".rename");
+
+		rename_btn.on("click", function() {
+			var target_id = menu.attr("data-target-id");
+			var target = $("div[data-entity-id="+target_id+"]");
+			target.find(".rename-cont").renameWidget();
+		});
+	}
+	var empty_folder = ["<div class=\"empty-msg\">",
+						"<i class=\"due-if\">&#xe8ea;</i><br>",
+						"空文件夹",
+						"</div>"].join("");
+
+	function noteListAjax(){
+		var post_data = {},
  			_this = $(this),
  			folder_id = _this.attr("data-entity-id");
 
@@ -133,55 +127,31 @@ define(function(require){
  			success:function(data){
  				var list_dom = "";
  				if (data) {
- 					list_dom = data.list_dom;
+ 					var is_empty = data.list_dom==="";
+
+ 					list_dom = is_empty?empty_folder:data.list_dom;
+
  					var list_container = view_list.find(".mCSB_container");
  					list_container.html("");
  					list_container.append(list_dom);
+
+ 					if (is_empty) {
+ 						var cont_empty= list_container.find(".empty-msg");
+ 						cont_empty.css("margin-top",view_list.height()/2-20+"px");
+ 						$(window).on("resize", function() {
+ 							cont_empty.css("margin-top",view_list.height()/2-20+"px");
+ 						});
+ 					}
+
  					view_list.mCustomScrollbar("update");
  				}
  				view_list.mCustomScrollbar("scrollTo","top");
  			}
  		});	
+ 		folder_list_title.removeClass("title-selected");
  		folder_item_list.find(".item-cont").removeClass("selected");
- 		_this.addClass("selected");
- 	});
-
- 	view_list.on("click", ".item-cont", function() {
- 		var post_data = {},
- 			_this = $(this),
- 			note_id = _this.attr("data-entity-id"); 		
- 	});
-
-
-	var new_btn = $(".side-bar .new-btn"),
-		new_menu = $(".side-bar .new-menu");
-	
-	
-
-	window.CKEDITOR.on("instanceReady", afterEditorInited);
-
-
-	function afterEditorInited(){
-		var cke_contents = $(".cke_contents"),
-			edit_cont = $(".edit-cont");
-
-		cke_contents.fullHeight({
-			extra:["cke_bottom"]
-		});
-		edit_cont.fullHeight();
-		new_btn.on("click", function() {
-		
-			// CKEDITOR.instances.editor.setData("<p>听，海哭的声音。。。</p>");
-			console.log(CKEDITOR.instances.editor.getData());
-		});
-	}
-	function renameCall(menu){
-		var rename_btn = menu.find(".rename");
-
-		rename_btn.on("click", function() {
-			var target_id = menu.attr("data-target-id");
-			var target = $("div[data-entity-id="+target_id+"]");
-			target.find(".rename-cont").renameWidget();
-		});
+ 		var is_title_folder = _this.hasClass("folder-list-title")?true:false;
+ 		is_title_folder?_this.addClass("title-selected"):_this.addClass("selected");
+ 		
 	}
 });

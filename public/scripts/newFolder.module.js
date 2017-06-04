@@ -6,13 +6,16 @@ define("newFolder",function(require,exports,module){
 
 	var root_new_folder = $(".bar-top .new-folder"),
 		folder_menu = $(".folder-menu"),
-		list_new_folder = folder_menu.find(".new-folder"),
+		list_new_folder1 = folder_menu.eq(0).find(".new-folder"),
+		list_new_folder2 = folder_menu.eq(1).find(".new-folder"),
 		folder_item_list = $(".side-bar .folder-item-list"),
 		list_container = folder_item_list.find(".mCSB_container");
 	
 	root_new_folder.on("click", rootAjax);
 
-	list_new_folder.on("click", itemAjax);
+	list_new_folder1.on("click", itemAjax);
+
+	list_new_folder2.on("click", itemAjax);
 
 	function rootAjax(data){
 		var post_data = {
@@ -48,6 +51,7 @@ define("newFolder",function(require,exports,module){
 		var post_data = {
 			is_new: true
 		};
+		var par_menu = $(this).parent(".folder-menu");
 
 		var has_sub_icon = ["<i class=\"due-if arr-icon\">&#xe637;</i>"].join(""),
 			open_arr_dom = ["<span class=\"has-sub-open\">",
@@ -57,7 +61,7 @@ define("newFolder",function(require,exports,module){
 			sub_list_dom = ["<ul class=\"sub-list\">",
 							"</ul>"].join("");
 
-		var par_folder_id = (folder_menu).attr("data-target-id"),
+		var par_folder_id = par_menu.attr("data-target-id"),
 			par_folder = list_container
 						.find("div[data-entity-id="+par_folder_id+"]");
 

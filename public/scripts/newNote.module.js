@@ -4,8 +4,10 @@ define("newNote",function(require,exports,module){
 	var root_new_note = $(".new-menu .new-note"),
 		root_new_mk = $(".new-menu .new-mk"),
 		folder_menu = $(".folder-menu"),
-		folder_new_note = folder_menu.find(".new-note"),
-		folder_new_mk = folder_menu.find(".new-mk"),
+		folder_new_note1 = folder_menu.eq(0).find(".new-note"),
+		folder_new_mk1 = folder_menu.eq(0).find(".new-mk"),
+		folder_new_note2 = folder_menu.eq(1).find(".new-note"),
+		folder_new_mk2 = folder_menu.eq(1).find(".new-mk"),
 		folder_item_list = $(".folder-item-list"),
 		view_list = $(".view-list"),
 		list_container = view_list.find(".mCSB_container");
@@ -14,14 +16,18 @@ define("newNote",function(require,exports,module){
 
 	root_new_mk.on("click", newNote);
 
-	folder_new_note.on("click", newNote);
+	folder_new_note1.on("click", newNote);
 
-	folder_new_mk.on("click", newNote);
+	folder_new_mk1.on("click", newNote);
+
+	folder_new_note2.on("click", newNote);
+
+	folder_new_mk2.on("click", newNote);
 
 	function newNote(){
 		var _this = $(this),
 			new_note_type = "",
-			par_menu = _this.parents(".widget-menu"),
+			par_menu = _this.parent(".widget-menu"),
 			is_new_menu = par_menu.hasClass("new-menu")?true:false;
 
 		var menu_target_id = is_new_menu?"root":par_menu.attr("data-target-id");

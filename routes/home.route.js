@@ -10,7 +10,7 @@ router.get('/home', function(req, res) {
         req.session.islogin = req.cookies.islogin;
     }
     var user_msg = res.locals.islogin;
-   
+
     dbCon.folderSelect(client, user_msg.user_id, function(err,result){
         if(err) throw err;
         if(!err){

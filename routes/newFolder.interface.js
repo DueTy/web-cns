@@ -10,13 +10,16 @@ router.post("/newFolder",function(req, res, next){
 	if(req.session.islogin){
 		user_msg = req.session.islogin;
 	}
+	var created_at = getDateTime(),
+		modify_time = created_at;
 	var new_folder_msg = {
 		folder_id: uuidV4(),
 		folder_name: "新建文件夹",
 		folder_level: parseInt(req_body.par_folder_level)+1,
 		belong_id: user_msg.user_id,
 		par_folder_id: req_body.par_folder_id,
-		created_at: getDateTime()
+		created_at: getDateTime(),
+		modify_time: modify_time
 	};
 	var sql_param = [
 		new_folder_msg.folder_id,
@@ -24,7 +27,8 @@ router.post("/newFolder",function(req, res, next){
 		new_folder_msg.folder_level,
 		new_folder_msg.belong_id,
 		new_folder_msg.par_folder_id,
-		new_folder_msg.created_at
+		new_folder_msg.created_at,
+		new_folder_msg.modify_time
 	];
 
 	dbCon.folderInsert(client, sql_param, function(err){

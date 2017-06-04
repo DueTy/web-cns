@@ -8,7 +8,7 @@ define("backLayer",function(require,exports,module){
         $.fn.backLayer = function(opts) {
 
         	var defaults = {
-        		call:{},
+        		closeCall:{},
         		bg_color: "#000"
         	};
 
@@ -18,7 +18,8 @@ define("backLayer",function(require,exports,module){
     		var isIE6 = isIE && !window.XMLHttpRequest;
     		var position = !isIE6 ? "fixed" : "absolute";
     		var containerBox = $(this);
-    		var bg_color = settings.bg_color;
+    		var bg_color = settings.bg_color,
+                closeCall = settings.closeCall;
 
         	return this.each(function(){
         		containerBox.css({
@@ -53,6 +54,13 @@ define("backLayer",function(require,exports,module){
         		$("window").resize(function() {
         			layer_iestyle();
         		});
+
+                // layer.one("click", function() {                    
+                //     containerBox.hide();
+                //     layer.remove();
+                // });
+                closeCall(containerBox,layer);
+
         	});
         
 

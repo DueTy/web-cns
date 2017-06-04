@@ -192,6 +192,18 @@ article {
   top: -1px;
   margin-left: -2px;
 }
+.my-folders .title-selected {
+  background-color: #398dee;
+}
+.my-folders .title-selected .due-if {
+  color: #fff;
+}
+.my-folders .title-selected .btn-text {
+  color: #fff;
+}
+.my-folders .title-selected:hover {
+  background-color: #398dee;
+}
 .folder-item-list {
   overflow: auto;
 }
@@ -327,6 +339,7 @@ article {
   margin-top: -2px;
   z-index: 100;
   display: none;
+  width: 195px;
 }
 .search-bar-main .ipt-show {
   display: inline-block;
@@ -361,6 +374,18 @@ article {
 }
 .search-bar-main .note-size {
   margin-left: 10px;
+}
+.search-bar-main .empty-msg {
+  position: relative;
+  text-align: center;
+  font-size: 16px;
+  color: #BFBFBF;
+}
+.search-bar-main .empty-msg .due-if {
+  font-size: 32px;
+  color: #F5CD62;
+  position: static;
+  margin-right: 10px;
 }
 .search-cont {
   width: 80%;
@@ -528,6 +553,20 @@ article {
 }
 .layer-msg a {
   color: #F5CD62;
+}
+.warn-msg {
+  font-size: 25px;
+  text-align: center;
+  padding: 10px 0;
+  width: 30%;
+  display: none;
+  background-color: #F8F8F8;
+  border: 1px solid #E0E1E5;
+  color: #737373;
+  border-radius: 5px;
+}
+.warn-msg .due-if {
+  color: #F78A09;
 }
 
 html,

@@ -197,6 +197,18 @@ article{
             margin-left: -2px;
         }
     }
+    .title-selected{
+        background-color: #398dee;
+        .due-if{
+            color: #fff;
+        }
+        .btn-text{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #398dee;
+        }
+    }
 }
 .folder-item-list{
     overflow: auto;
@@ -334,6 +346,7 @@ article{
         margin-top: -2px;
         z-index: 100;
         display: none;
+        width: 195px;
     }
     .ipt-show{
         display: inline-block;
@@ -368,6 +381,18 @@ article{
     }
     .note-size{
         margin-left: 10px;
+    }
+    .empty-msg{
+        position: relative;
+        text-align: center;
+        font-size: 16px;
+        color: #BFBFBF;
+        .due-if{
+            font-size: 32px;
+            color: #F5CD62;
+            position: static;
+            margin-right: 10px;
+        }
     }
 }
 .search-cont{
@@ -536,5 +561,19 @@ article{
     color: #fff;
     a{
         color: #F5CD62;
+    }
+}
+.warn-msg{
+    font-size: 25px;
+    text-align: center;
+    padding: 10px 0;
+    width: 30%;
+    display: none;
+    background-color: #F8F8F8;
+    border: 1px solid #E0E1E5;
+    color: #737373;
+    border-radius: 5px;
+    .due-if{
+        color: #F78A09;
     }
 }
