@@ -9,6 +9,7 @@ define("newNote",function(require,exports,module){
 		folder_new_note2 = folder_menu.eq(1).find(".new-note"),
 		folder_new_mk2 = folder_menu.eq(1).find(".new-mk"),
 		folder_item_list = $(".folder-item-list"),
+		folder_list_title = $(".folder-list-title"),
 		view_list = $(".view-list"),
 		list_container = view_list.find(".mCSB_container");
 
@@ -55,6 +56,7 @@ define("newNote",function(require,exports,module){
 		if(data){
 			dom_data = data.dom_data;
 			list_container.prepend(dom_data);
+			folder_list_title.trigger("click");
 		}
 	}
 

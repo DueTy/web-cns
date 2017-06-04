@@ -23,8 +23,10 @@ function calcuByteLength(text){
     var bf = new Buffer(text);
     var byte = bf.length,
         byte_str = "";
-    if (byte>1024) {
-        byte_str = byte/1024+"KB";
+    if (byte>1048576) {
+        byte_str = (byte/1048576).toFixed(0)+"MB";
+    }else if(byte>1024){
+        byte_str = (byte/1024).toFixed(1)+"KB";
     }else{
         byte_str = byte+"B";
     }

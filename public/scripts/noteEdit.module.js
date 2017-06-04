@@ -2,9 +2,20 @@ define("noteEdit", function(require,exports,module){
 	"use strict";
 	var editormd = require("editormd");
 
+
+	var edit_bar = $(".edit-bar"),
+		view_list = $(".view-list"),
+		name_cont = edit_bar.find(".name-cont"),
+		save_btn = edit_bar.find(".save-btn"),
+		share_btn = edit_bar.find(".share-btn"),
+		edit_cont = $(".edit-cont"),
+		folder_item_list = $(".folder-item-list"),
+		folder_list_title = $(".folder-list-title"),
+		editor_md;
+
 	var editor_init = {
-		mkEditorInit: function(data,save_btn){
-			var testEditor = editormd("editor", {
+		mkEditorInit: function(data){
+			editor_md = editormd("editor", {
 		        width: "100%",
 		        height: "100%",
 		        path : '/dist/editormd/lib/',
@@ -31,7 +42,7 @@ define("noteEdit", function(require,exports,module){
 		        imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
 		        imageUploadURL : "./php/upload.php",
 		        onload : function() {
-		            console.log('onload', this);
+		            // console.log('onload', this);
 		            //this.fullscreen();
 		            //this.unwatch();
 		            //this.watch().fullscreen();
@@ -43,41 +54,110 @@ define("noteEdit", function(require,exports,module){
 		        }
 		    });
 		},
-		noteEditorInit: function(data,save_btn){
-			window.CKEDITOR.replace("editor");
-
-			window.CKEDITOR.on("instanceReady", ckEditorReady);
-
-			function ckEditorReady(){
-				var cke_contents = $(".cke_contents"),
-				edit_cont = $(".edit-cont");
-
-				cke_contents.fullHeight({
-					extra:["cke_bottom"]
-				});
-				edit_cont.fullHeight();
-			}
+		noteEditorInit: function(){
+			window.CKEDITOR.replace("editor");				
 		}
 	};
-	var edit_bar = $(".edit-bar"),
-		view_list = $(".view-list"),
-		save_btn = edit_bar.find(".save-btn"),
-		share_btn = edit_bar.find(".share-btn"),
-		edit_cont = $(".edit-cont");
+	
+
 
 	view_list.on("click", ".view-item", function() {
-		var this_note = $(this).find(".item-cont"),
+		var _this = $(this),
+			this_note = _this.find(".item-cont"),
+			this_name = _this.find(".btn-text").text(),
 			note_id = this_note.attr("data-entity-id"),
 			note_type = this_note.attr("data-type"),
-			editorInitKey = note_type+"EditorInit",
-			editor_dom = ["<div id=\"editor\"></div>"].join("");
+			editorInitKey = note_type+"EditorInit";
+
+
+		$(this).addClass("selected").siblings(".view-item").removeClass("selected");
+		name_cont.text(this_name);
 
 		save_btn.attr("data-entity-id", note_id);
 		share_btn.attr("data-entity-id", note_id);
 
-		edit_cont.html("").append(editor_dom);
+		save_btn.attr("data-type", note_type);
+		share_btn.attr("data-type",  note_type);
 
-		var editorInit = editor_init[editorInitKey];
-		editorInit();		
+		var post_data = {
+			note_id: note_id
+		};
+		$.ajax({
+			url: "/getNote",
+			type: "POST",
+			dataType: "JSON",
+			data: post_data,
+			success:function(data){
+				var note_content = data.note_content;
+
+				var editor_dom = {
+					mk: ["<div id=\"editor\"><textarea style=\"display:none;\">"+
+					note_content+"</textarea></div>"].join(""),
+					note: ["<div id=\"editor\">"+note_content+"</div>"].join("")
+				}
+				edit_cont.html("").append(editor_dom[note_type]);
+				var editorInit = editor_init[editorInitKey];
+				editorInit();
+			}
+		});
+
+				
 	});
+
+	save_btn.on("click", saveFun);
+
+	function getAbstract(text){
+		var abstract = "";
+		if(text.length>80){
+			abstract = text.substring(0,80);
+		}else{
+			abstract = text;
+		}
+		return abstract;
+	}
+	function saveFun(){
+		var _this = $(this),
+			note_type = _this.attr("data-type"),
+			post_data = {};
+		_this.text("正在保存")
+		post_data.note_id = _this.attr("data-entity-id");
+		if(note_type==="note"){
+			var abstract = getAbstract(CKEDITOR.instances.editor.document.getBody().getText());
+			
+			post_data.note_content = CKEDITOR.instances.editor.getData();
+			post_data.note_abstract = abstract;
+
+		}else{
+			post_data.note_content = editor_md.getMarkdown();
+			post_data.note_abstract = "";
+		}
+		
+		$.ajax({
+			url: "/saveNote",
+			type: "POST",
+			dataType: "JSON",
+			data: post_data,
+			success:function(data){
+				if(data.is_saved){
+					if(folder_list_title.hasClass("title-selected")){
+						folder_list_title.trigger("click")
+					}else{
+						folder_item_list.find(".selected").trigger("click");
+					}
+					_this.text("保存");
+				}
+			}
+		});
+	}
+	window.CKEDITOR.on("instanceReady", ckEditorReady);
+
+	function ckEditorReady(){
+		var cke_contents = $(".cke_contents"),
+		edit_cont = $(".edit-cont");
+
+		cke_contents.fullHeight({
+			extra:["cke_bottom"]
+		});
+		edit_cont.fullHeight();
+	}
 });

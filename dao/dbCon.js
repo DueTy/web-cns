@@ -45,7 +45,7 @@ function folderInsert(client, folder_msg, callback) {
     });
 }
 function noteInsert(client, note_msg, callback) {
-    client.query('insert into note value(?,?,?,?,?,?,?,?,?,?)', note_msg,function(err,result){
+    client.query('insert into note value(?,?,?,?,?,?,?,?,?,?,?)', note_msg,function(err,result){
         if (err) {
             console.log("error:" + err.message);
         }
@@ -66,7 +66,7 @@ function folderSelect(client, owner, callback){
 function noteSelect(client, select_opt, callback){
     var belong_folder = select_opt.belong_folder_id,
         owner = select_opt.user_id;
-    var sql = "select note_id,note_name,note_type,show_modify,note_size "+
+    var sql = "select note_id,note_name,note_type,note_abstract,show_modify,note_size "+
     " from note where belong_folder_id='"+belong_folder+"' and owner_id='"+owner+
     "' order by modify_time DESC";
     client.query(sql,function(err,result){
@@ -119,7 +119,36 @@ function renameFun(client, rename_msg, callback) {
         set_val = " set folder_name='"+val+"',modify_time='"+modify_time+"'";
     }
     var sql = "update "+tables[type]+set_val+" where "+type+"_id='"+id+"'";
-    console.log(sql);
+    client.query(sql,function(err,result){
+        if (err) {
+            console.log("error:" + err.message);
+        }
+        callback(err,result);
+    });
+}
+
+function noteSave(client, save_opt, callback) {
+    var user_id = save_opt.user_id,
+        content = save_opt.note_content,
+        note_id = save_opt.note_id,
+        abstract = save_opt.note_abstract,
+        size = save_opt.note_size,
+        show_modify = save_opt.show_modify;
+    var sql = "update note set note_content='"+content+
+    "',note_abstract='"+abstract+
+    "',note_size='"+size+
+    "',show_modify='"+show_modify+
+    "' where note_id='"+note_id+"'";
+    client.query(sql,function(err,result){
+        if (err) {
+            console.log("error:" + err.message);
+        }
+        callback(err,result);
+    });
+}
+function noteGet(client, get_opt, callback) {
+    var note_id = get_opt.note_id;
+    var sql = "select note_content from note where note_id='"+note_id+"'";
     client.query(sql,function(err,result){
         if (err) {
             console.log("error:" + err.message);
@@ -140,4 +169,6 @@ exports.noteSelect = noteSelect;
 exports.folderDel = folderDel;
 exports.noteDel = noteDel;
 exports.renameFun = renameFun;
+exports.noteSave = noteSave;
+exports.noteGet = noteGet;
 

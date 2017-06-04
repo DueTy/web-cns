@@ -110,7 +110,8 @@ define(function(require){
 	var empty_folder = ["<div class=\"empty-msg\">",
 						"<i class=\"due-if\">&#xe8ea;</i><br>",
 						"空文件夹",
-						"</div>"].join("");
+						"</div>"].join(""),
+		empty_editor = ["<div class=\"empty-editor\"><i class=\"due-if\">&#xe606;</i></div>"].join("");
 
 	function noteListAjax(){
 		var post_data = {},
@@ -144,6 +145,16 @@ define(function(require){
  					}
 
  					view_list.mCustomScrollbar("update");
+ 					if(list_container.find(".view-item").length!==0){
+ 						list_container.find(".view-item").eq(0).trigger("click");
+ 					}else{
+ 						edit_cont.html("").append(empty_editor);
+ 						var cont_empty= edit_cont.find(".empty-editor");
+ 						cont_empty.css("margin-top",view_list.height()/2-20+"px");
+ 						$(window).on("resize", function() {
+ 							cont_empty.css("margin-top",view_list.height()/2-20+"px");
+ 						});
+ 					}
  				}
  				view_list.mCustomScrollbar("scrollTo","top");
  			}

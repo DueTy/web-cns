@@ -19,6 +19,7 @@ router.post("/newNote", function(req, res, next){
 		modify_time: created_at,
 		show_modify: modify_date,
 		note_content: "",
+		note_abstract:"",
 		note_size: "0B"
 	};
 
@@ -32,6 +33,7 @@ router.post("/newNote", function(req, res, next){
 		note_msg.modify_time,
 		note_msg.show_modify,
 		note_msg.note_content,
+		note_msg.note_abstract,
 		note_msg.note_size
 	];
 
@@ -42,6 +44,7 @@ router.post("/newNote", function(req, res, next){
 				note_name: note_msg.note_name,
 				note_type: note_msg.note_type,
 				note_id: note_msg.note_id,
+				note_abstract: note_msg.note_abstract,
 				modify_date: note_msg.modify_date,
 				note_size: note_msg.note_size
 			};

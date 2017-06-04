@@ -23,8 +23,10 @@ function calcuByteLength(text){
     var bf = new Buffer(text);
     var byte = bf.length,
         byte_str = "";
-    if (byte>1024) {
-        byte_str = byte/1024+"KB";
+    if (byte>1048576) {
+        byte_str = (byte/1048576).toFixed(0)+"MB";
+    }else if(byte>1024){
+        byte_str = (byte/1024).toFixed(1)+"KB";
     }else{
         byte_str = byte+"B";
     }
@@ -423,6 +425,7 @@ router.post("/newNote", function(req, res, next){
 		modify_time: created_at,
 		show_modify: modify_date,
 		note_content: "",
+		note_abstract:"",
 		note_size: "0B"
 	};
 
@@ -436,6 +439,7 @@ router.post("/newNote", function(req, res, next){
 		note_msg.modify_time,
 		note_msg.show_modify,
 		note_msg.note_content,
+		note_msg.note_abstract,
 		note_msg.note_size
 	];
 
@@ -446,6 +450,7 @@ router.post("/newNote", function(req, res, next){
 				note_name: note_msg.note_name,
 				note_type: note_msg.note_type,
 				note_id: note_msg.note_id,
+				note_abstract: note_msg.note_abstract,
 				modify_date: note_msg.modify_date,
 				note_size: note_msg.note_size
 			};
@@ -492,6 +497,57 @@ router.post("/getNoteList",function(req, res, next){
 	});
 
 	
+
+});
+router.post("/saveNote",function(req, res, next){
+	var client = dbCon.connect(),
+		req_body = req.body;
+
+	var save_opt = {
+		user_id: req.session.islogin.user_id,
+		note_content: req_body.note_content,
+		note_id: req_body.note_id,
+		note_abstract: req_body.note_abstract,
+		note_size: calcuByteLength(req_body.note_content),
+		show_modify: getDate(getDateTime())
+	};
+
+	dbCon.noteSave(client, save_opt, function(err, result){
+		if(err) throw err;
+		if(!err){
+			var affected_row = result.affectedRows;
+			if(affected_row>0){				
+				res.send({
+					is_saved: true,
+					msg: "内容修改成功",
+				});
+			}
+		}
+	});
+
+
+});
+router.post("/getNote", function(req, res, next){
+	var client = dbCon.connect();
+	var req_body = req.body;
+
+	var note_id = req_body.note_id;
+
+	var get_opt = {
+		note_id: note_id
+	};
+
+	dbCon.noteGet(client, get_opt, function(err, result){
+		if(err) throw err;
+		if(!err){
+			var content = result[0].note_content;
+			res.send({
+				is_get: true,
+				note_content: content
+			})
+		}
+	});
+
 
 });
 router.post("/rename",function(req, res, next){
