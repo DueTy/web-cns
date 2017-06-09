@@ -7,7 +7,8 @@ function connectServer() {
         user: 'root',
         password: '701525',
         database: 'cns',
-        port: 3306
+        port: 3306,
+        connectionLimit:1
     })
 
     return client;
@@ -30,6 +31,18 @@ function userSelect(client, username, callback) {
 
 function userInsert(client, user_msg, callback) {
     client.query('insert into user value(?,?,?,?,?,?,?,?,?)', user_msg, function(err, result) {
+        if (err) {
+            console.log("error:" + err.message);
+        }
+        callback(err);
+    });
+}
+
+function userUpdate(client, user_msg, callback) {
+    var set_opt = "username='"+user_msg.user_name+"',gender='"
+    +user_msg.gender+"',personal_desc='"+user_msg.personal_desc
+    +"',password='"+user_msg.password+"'";
+    client.query("update user set "+set_opt+" where user_id='"+user_msg.user_id+"'", user_msg, function(err, result) {
         if (err) {
             console.log("error:" + err.message);
         }
@@ -134,11 +147,12 @@ function noteSave(client, save_opt, callback) {
         abstract = save_opt.note_abstract,
         size = save_opt.note_size,
         show_modify = save_opt.show_modify;
-    var sql = "update note set note_content='"+content+
-    "',note_abstract='"+abstract+
-    "',note_size='"+size+
-    "',show_modify='"+show_modify+
-    "' where note_id='"+note_id+"'";
+    var sql = 'update note set note_content="'+content+
+    '",note_abstract="'+abstract+
+    '",note_size="'+size+
+    '",show_modify="'+show_modify+
+    '" where note_id="'+note_id+'"';
+    console.log(sql);
     client.query(sql,function(err,result){
         if (err) {
             console.log("error:" + err.message);
@@ -148,7 +162,22 @@ function noteSave(client, save_opt, callback) {
 }
 function noteGet(client, get_opt, callback) {
     var note_id = get_opt.note_id;
-    var sql = "select note_content from note where note_id='"+note_id+"'";
+    var sql = "";
+    if(get_opt.share_note_get){
+        var sql = "select note_content,note_name from note where note_id='"+note_id+"'";
+    }else{
+        var sql = "select note_content from note where note_id='"+note_id+"'";
+    }
+    client.query(sql,function(err,result){
+        if (err) {
+            console.log("error:" + err.message);
+        }
+        callback(err,result);
+    });
+}
+function newestAndSearch(client, get_sql, callback) {
+    var sql = get_sql;
+    console.log(sql);
     client.query(sql,function(err,result){
         if (err) {
             console.log("error:" + err.message);
@@ -157,11 +186,58 @@ function noteGet(client, get_opt, callback) {
     });
 }
 
+function verSave(client, ver_value, callback) {
+    var sql = "insert into historical_note value(?,?,?,?,?,?,?)";
+    client.query(sql, ver_value,function(err,result){
+        if (err) {
+            console.log("error:" + err.message);
+        }
+        callback(err,result);
+    });
+}
+function verGet(client, get_opt, callback) {
+    var select_opt = get_opt.select_opt,
+        where_opt = get_opt.where_opt;
 
+    var sql = "select "+select_opt+" from historical_note"+
+    " where "+where_opt+" order by created_at DESC";
+    console.log(sql);
+    client.query(sql, function(err,result){
+        if (err) {
+            console.log("error:" + err.message);
+        }
+        callback(err,result);
+    });
+}
+function verBack(client, back_opt, callback) {
+    var note_id = back_opt.note_id,
+        ver_id = back_opt.ver_id;
+    var sql = "update note set note_content=(select note_content from historical_note where note_id='"+ver_id+"'),"
+    +"note_abstract=(select note_abstract from historical_note where note_id='"+ver_id+"') "+
+    " where note_id='"+note_id+"'";
+    console.log(sql);
+    client.query(sql, function(err,result){
+        if (err) {
+            console.log("error:" + err.message);
+        }
+        callback(err,result);
+    });
+}
+
+function verDel(client, ver_id, callback) {
+    var sql = "delete from historical_note where note_id='"+ver_id+"'";
+    client.query(sql, function(err,result){
+        if (err) {
+            console.log("error:" + err.message);
+        }
+        callback(err,result);
+    });
+}
 
 exports.connect = connectServer;
 exports.userSelect = userSelect;
 exports.userInsert = userInsert;
+exports.userUpdate = userUpdate;
 exports.folderInsert = folderInsert;
 exports.noteInsert = noteInsert;
 exports.folderSelect = folderSelect;
@@ -171,4 +247,8 @@ exports.noteDel = noteDel;
 exports.renameFun = renameFun;
 exports.noteSave = noteSave;
 exports.noteGet = noteGet;
-
+exports.newestAndSearch = newestAndSearch;
+exports.verSave = verSave;
+exports.verGet = verGet;
+exports.verBack = verBack;
+exports.verDel = verDel;

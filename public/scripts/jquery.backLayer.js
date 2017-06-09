@@ -8,7 +8,7 @@ define("backLayer",function(require,exports,module){
         $.fn.backLayer = function(opts) {
 
         	var defaults = {
-        		closeCall:{},
+        		closeCall:function(){},
         		bg_color: "#000"
         	};
 
@@ -31,7 +31,7 @@ define("backLayer",function(require,exports,module){
         			"margin-top": -(containerBox.height() / 2) + "px",
         			"margin-left": -(containerBox.width() / 2) + "px"
         		});
-        		var layer = $("<div></div>");
+        		var layer = $("<div class=\"back-layer\"></div>");
         		layer.css({
         			"width": "100%",
         			"height": "100%",

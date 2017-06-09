@@ -1,0 +1,13 @@
+<% include header %>
+
+<div class="share-box">	
+	<div class="note-title"><%= note_name %></div>
+	<div id="editor" data-type="<%= note_type %>">	
+		<% if (note_type==="mk") { %>
+		<textarea style="display: none;"><%- note_content%></textarea>
+		<% }else{ %>
+		<%- note_content%>
+		<% } %>
+	</div>
+</div>
+<% include footer %>

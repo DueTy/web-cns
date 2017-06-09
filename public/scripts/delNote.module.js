@@ -27,7 +27,8 @@ define("delNote",function(require,exports,module){
 			dataType: "JSON",
 			data: post_data,
 			success: function(data){
-				var bro_num = note.parent(".view-item").siblings().length;
+				var par_item_cont = note.parent(".view-item"),
+					bro_num = par_item_cont.siblings().length;
 				if(bro_num===0){
 					list_container.html("");
 					list_container.append(empty_folder);
@@ -37,7 +38,7 @@ define("delNote",function(require,exports,module){
 						cont_empty.css("margin-top",view_list.height()/2-20+"px");
 					});
 				}
-				note.remove();
+				par_item_cont.remove();
 			}
 		});
 	}

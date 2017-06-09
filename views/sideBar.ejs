@@ -21,14 +21,6 @@
 				</div>
 								
 			</li>
-			<li class="newest cns-btn ">
-				<div class="item-cont">
-					<a class="cns-btn side-bar-item">
-						<span class="due-if">&#xe627;</span><span class="newest-btn btn-text">分享</span>
-					</a>	
-				</div>
-							
-			</li>
 			<li class="my-folders">
 				<div class="item-cont folder-list-title" data-entity-id="root">
 					<a class="cns-btn list-title side-bar-item">
@@ -39,7 +31,7 @@
 				<ul class="folder-item-list">
 					<% side_data.forEach(function(item){ %>
 					<%- include sideItemTemp %>
-					<%	}) %>
+					<%	}); %>
 				</ul>
 			</li>
 		</ul>

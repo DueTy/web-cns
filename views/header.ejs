@@ -16,16 +16,15 @@
     <div class="page-nav navbar-default block">
         <ul class="nav-list">
             <li class="site-logo nav-item due-if">&#xe606;</li>
-            <li class="nav-item"><a title="主页" href="/home">首页</a></li>
             <% if(!locals.islogin){%>
             <li class="nav-item"><a title="登陆" href="/login">登录</a></li>
-            <% } %>
             <li class="nav-item"><a title="注册" href="/reg">注册</a></li>
+            <% } %>
         </ul>
         <div class="user-menu">
             <% if(locals.islogin){%>
             <p class="user-control">
-                <a title="点击可修改信息" user_id="<%= user_msg.user_id %>"><%= user_msg.user_name %></a>已登陆
+                <a class="user-msg-cont" title="点击可修改信息" user_id="<%= locals.islogin.user_id %>"><%= locals.islogin.user_name %></a>已登陆
                 <a href="/logout">登出</a>
             <%}%>
         </div>

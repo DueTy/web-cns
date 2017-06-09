@@ -185,8 +185,13 @@ article{
 }
 .newest{
     .due-if{
-        top: -2px;
-        margin-left: -2px;
+        top: -4px;
+        margin-left: -4px;
+    }
+    .selected{
+        .due-if{
+            color: #fff;
+        }
     }
 }
 .my-folders{
@@ -458,6 +463,9 @@ article{
         }
     }
     .save-btn{
+        right: 217px;
+    }
+    .version-btn{
         right: 120px;
     }
     .share-btn{
@@ -575,7 +583,7 @@ article{
 .warn-msg{
     font-size: 25px;
     text-align: center;
-    padding: 10px 0;
+    padding: 25px 0;
     width: 30%;
     display: none;
     background-color: #F8F8F8;
@@ -584,5 +592,101 @@ article{
     border-radius: 5px;
     .due-if{
         color: #F78A09;
+    }
+}
+.share-box{
+    background-color: #fff;
+    width: 80%;
+    margin: auto;
+    .cke_top{
+        display: none;
+    }
+    .cke_bottom{
+        display: none;
+    }
+    .note-title{
+        font-size: 20px;
+        text-align: center;
+        padding: 10px 0;
+    }
+}
+.version-mag-cont{
+    background-color: #fff;
+    width: 70%;
+    overflow: hidden;
+    display: none;
+    .version-mag-blk{
+        float: left;
+    }
+    .note-cont{
+        height: 450px;
+        width: 70%;
+    }
+    .version-list{
+        width: 30%;      
+        background-color: #f6f7f9;
+    }
+    .version-item{
+        padding: 10px;
+        border-bottom: 1px solid #e4e5e7;
+        cursor: pointer;
+    }
+    .version-date{
+        color: #C2C2C2;
+    }
+    .del-btn{        
+        float: right;
+        color: #76B0F3;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+    .back-btn{
+        float: right;
+        color: #76B0F3;
+        cursor: pointer;
+    }
+    .item-active{
+        background-color: #e9f3ff;
+    }
+    .cke_top{
+        display: none;
+    }
+    .cke_bottom{
+        display: none;
+    }
+}
+.msg-form-container{
+    margin: 0 auto;
+    width: 440px;
+}
+.msg-form{
+    width: 430px;
+    height: 410px;
+    margin: 80px auto;
+    border: 1px solid #f1f2f2;
+    background-color: #fff;
+    box-shadow: 0 0 18px 0 rgba(57, 141, 238, 0.12);
+    fieldset{
+        width: 80%;
+        margin-top: 50px;
+    }
+    .form-group{
+        height: 50px;
+    }
+    .login-cont-title{
+        margin: 80px 0 0 10px;
+        font-size: 20px;
+    }
+}
+.reg-form{
+    width: 500px;
+    margin-left: -30px;
+}
+.user-msg-modify{
+    width: 440px;
+    height: 400px;
+    display: none;
+    .msg-form{
+        margin: 0;
     }
 }

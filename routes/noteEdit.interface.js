@@ -1,6 +1,5 @@
 router.post("/saveNote",function(req, res, next){
-	var client = dbCon.connect(),
-		req_body = req.body;
+	var req_body = req.body;
 
 	var save_opt = {
 		user_id: req.session.islogin.user_id,

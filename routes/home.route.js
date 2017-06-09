@@ -1,6 +1,5 @@
 router.get('/home', function(req, res) {
-    var client = dbCon.connect(),
-        folder_list_data = [],
+    var folder_list_data = [],
         view_list_data = [];
 
     if (req.session.islogin) {

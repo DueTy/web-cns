@@ -1,5 +1,5 @@
 router.post("/delFolder",function(req, res, next){
-	var client = dbCon.connect();
+	
 	var req_body = req.body;
 
 	var start_level;

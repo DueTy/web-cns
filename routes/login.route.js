@@ -11,7 +11,6 @@ router.route('/login').get(function(req, res) {
         user: res.locals.islogin
     });
 }).post(function(req, res) {
-    client = dbCon.connect();
     result = null;
     dbCon.userSelect(client, req.body.username, function(result) {
         if (result[0] === undefined) {

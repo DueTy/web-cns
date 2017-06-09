@@ -68,6 +68,7 @@ define("renameWidget",function(require,exports,module){
                                 if(data && data.is_affected){
                                     this_par.find(".btn-text").eq(0).text(data.new_name);
                                     _this.val(data.new_name);
+                                    this_par.prop("title",data.new_name);
                                 }
                                 
                             }

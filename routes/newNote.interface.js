@@ -2,7 +2,7 @@
 var search_bar_item_temp = require("../views/searchItemTemp.ejs");
 
 router.post("/newNote", function(req, res, next){
-	var client = dbCon.connect();
+	
 	var req_body = req.body;
 	
 	var user_msg = req.session.islogin;
@@ -61,7 +61,7 @@ router.post("/newNote", function(req, res, next){
 });
 
 router.post("/getNoteList",function(req, res, next){
-	var client = dbCon.connect();
+	
 	var req_folder = req.body.belong_folder_id;
 
 	var list_dom = "",
@@ -82,7 +82,6 @@ router.post("/getNoteList",function(req, res, next){
 					item: list_data[i]
 				});
 			}
-
 			res.send({
 				msg: "folder's notes get successfully",
 				list_dom: list_dom

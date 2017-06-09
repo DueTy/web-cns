@@ -10,6 +10,8 @@ require.extensions[".ejs"] = art_temp.extension;
 var multer = require("multer");
 var md5 = require("md5");
 
+var client = dbCon.connect();
+
 
 function getDateTime(){
 	return sd_time.format(new Date(), 'YYYY-MM-DD hh:mm:ss');
@@ -33,9 +35,36 @@ function calcuByteLength(text){
     return byte_str;
 }
 
+router.post("/getSearchNote", function(req, res, next){
+	var req_body = req.body;
+	var keyword = req_body.keyword,
+		user_id = req.session.islogin.user_id;
+
+	var get_sql = "select note_id,note_name,note_type,note_abstract,show_modify,note_size "+
+    "from note where note_name LIKE '%"+keyword+"%' order by modify_time DESC";
+    
+	dbCon.newestAndSearch(client, get_sql, function(err, result){
+		if(err) throw err;
+		if(!err){
+			var list_data = result,
+				list_dom = "";
+			for (var i = 0; i < list_data.length; i++) {
+				list_dom += search_bar_item_temp({
+					item: list_data[i]
+				});
+			}
+			res.send({
+				msg: "notes get successfully",
+				list_dom: list_dom,
+				is_get: true
+			});
+		}
+	});
+
+
+});
 router.get('/home', function(req, res) {
-    var client = dbCon.connect(),
-        folder_list_data = [],
+    var folder_list_data = [],
         view_list_data = [];
 
     if (req.session.islogin) {
@@ -138,7 +167,6 @@ router.route('/login').get(function(req, res) {
         user: res.locals.islogin
     });
 }).post(function(req, res) {
-    client = dbCon.connect();
     result = null;
     dbCon.userSelect(client, req.body.username, function(result) {
         if (result[0] === undefined) {
@@ -168,13 +196,44 @@ router.get('/logout', function(req, res) {
     req.session.destroy();
     res.redirect('/login');
 });
+router.get('/share/:share_note_id/:note_type', function(req, res, next) {
+	// console.log('url参数对象 :',req.params);  
+	// console.log('get请求参数对象 :',req.query);  
+	// console.log('post请求参数对象 :',req.body);  
+	// console.log('q的值为 :',req.params.share_note_id); 
+
+    var	share_note_id = req.params.share_note_id,
+		note_type = req.params.note_type;
+	var get_opt = {
+		note_id: share_note_id,
+		share_note_get: true
+	};
+
+	dbCon.noteGet(client, get_opt, function(err, result){
+		if (err) {
+			throw err
+		}else{
+			var note_content = result[0].note_content,
+				note_name = result[0].note_name;
+			res.render("noteShare",{
+				note_content: note_content,
+				note_type: note_type,
+				note_name: note_name
+			});
+		}
+	});
+
+
+    // console.log(req.headers.host);
+
+
+});
 
 router.route('/reg').get(function(req, res) {
     res.render('reg', {
         title: '注册'
     });
 }).post(function(req, res) {
-    client = dbCon.connect();
     var req_body = req.body;
     
     var user_msg = {
@@ -231,8 +290,33 @@ router.route('/regMsg').get(function(req, res){
 });
 
 
+router.route('/userMsgModify').get(function(req, res) {
+
+}).post(function(req, res) {
+    var req_body = req.body;
+    
+    var user_id = req.session.islogin.user_id;
+    var user_msg = {
+        user_name: req_body.username,
+        gender: req_body.gender,
+        personal_desc: req_body.personal_desc,
+        password: req_body.password,
+        user_id: user_id
+    };
+    dbCon.userUpdate(client,
+     user_msg,
+     function(err) {
+        if (err) throw err;
+        if(!err){
+            res.clearCookie('islogin');
+            req.session.destroy();
+            res.redirect('/login');
+        }
+
+    });
+});
 router.post("/delFolder",function(req, res, next){
-	var client = dbCon.connect();
+	
 	var req_body = req.body;
 
 	var start_level;
@@ -335,7 +419,7 @@ router.post("/delFolder",function(req, res, next){
 
 });
 router.post("/delNote",function(req, res, next){
-	var client = dbCon.connect();
+	
 	var req_body = req.body;
 
 	var condition = "note_id='"+req_body.note_id+"'";
@@ -352,10 +436,38 @@ router.post("/delNote",function(req, res, next){
 	})
 
 });
+router.post("/getNewestNote", function(req, res, next){
+	var req_body = req.body;
+	var time_a_week = sd_time.format(new Date(new Date().getTime() - 86400000*7)),
+		user_id = req.session.islogin.user_id;
+
+	var get_sql = "select note_id,note_name,note_type,note_abstract,show_modify,note_size "+
+    "from note where owner_id='"+user_id+"' and created_at>'"+time_a_week+"' order by modify_time DESC";
+    
+	dbCon.newestAndSearch(client, get_sql, function(err, result){
+		if(err) throw err;
+		if(!err){
+			var list_data = result,
+				list_dom = "";
+			for (var i = 0; i < list_data.length; i++) {
+				list_dom += search_bar_item_temp({
+					item: list_data[i]
+				});
+			}
+			res.send({
+				msg: "notes get successfully",
+				list_dom: list_dom,
+				is_get: true
+			});
+		}
+	});
+
+
+});
 var side_bar_item_temp = require("../views/sideItemTemp.ejs");
 
 router.post("/newFolder",function(req, res, next){
-	var client = dbCon.connect();
+	
 
 	var folder_id = uuidV4();
 	var req_body = req.body;
@@ -408,7 +520,7 @@ router.post("/newFolder",function(req, res, next){
 var search_bar_item_temp = require("../views/searchItemTemp.ejs");
 
 router.post("/newNote", function(req, res, next){
-	var client = dbCon.connect();
+	
 	var req_body = req.body;
 	
 	var user_msg = req.session.islogin;
@@ -467,7 +579,7 @@ router.post("/newNote", function(req, res, next){
 });
 
 router.post("/getNoteList",function(req, res, next){
-	var client = dbCon.connect();
+	
 	var req_folder = req.body.belong_folder_id;
 
 	var list_dom = "",
@@ -488,7 +600,6 @@ router.post("/getNoteList",function(req, res, next){
 					item: list_data[i]
 				});
 			}
-
 			res.send({
 				msg: "folder's notes get successfully",
 				list_dom: list_dom
@@ -500,8 +611,7 @@ router.post("/getNoteList",function(req, res, next){
 
 });
 router.post("/saveNote",function(req, res, next){
-	var client = dbCon.connect(),
-		req_body = req.body;
+	var req_body = req.body;
 
 	var save_opt = {
 		user_id: req.session.islogin.user_id,
@@ -528,7 +638,7 @@ router.post("/saveNote",function(req, res, next){
 
 });
 router.post("/getNote", function(req, res, next){
-	var client = dbCon.connect();
+	
 	var req_body = req.body;
 
 	var note_id = req_body.note_id;
@@ -551,7 +661,7 @@ router.post("/getNote", function(req, res, next){
 
 });
 router.post("/rename",function(req, res, next){
-	var client = dbCon.connect();
+	
 	var req_body = req.body;
 
 	var modify_time = getDateTime();
@@ -581,6 +691,136 @@ router.post("/rename",function(req, res, next){
 	}
 
 	
+});
+router.post("/verBack",function(req, res, next){
+	var req_body = req.body;
+
+	var back_opt = {
+		note_id: req_body.belong_note_id,
+		ver_id: req_body.ver_id
+	};
+	dbCon.verBack(client, back_opt, function(err,result){
+		if(err) throw err;
+		if(!err){
+			var is_affected = result.affectedRows>0;
+			res.send({
+				is_back:is_affected
+			});
+		}
+	});
+});
+router.post("/verDel",function(req, res, next){
+	var req_body = req.body;
+	var ver_id = req_body.ver_id;
+
+	dbCon.verDel(client, ver_id, function(err,result){
+		if(err) throw err;
+		if(!err){
+			console.log(result);
+			var is_affected = result.affectedRows>0;
+			res.send({
+				is_del:is_affected
+			});
+		}
+	});
+
+});
+var ver_item_temp = require("../views/verItemTemp.ejs");
+router.post("/verGet",function(req, res, next){
+	var req_body = req.body,
+		get_opt = {};
+	if(req_body.is_belong_id==="true"){
+		
+		get_opt = {
+			select_opt: "note_id,created_at",
+			where_opt: "belong_note_id='"+req_body.belong_note_id+"'"
+		};
+
+		dbCon.verGet(client, get_opt, function(err,result){
+			if(err) throw err;
+			if(!err){
+				var is_get = result.length>0;
+				if (is_get) {
+					var list_dom = "";
+					for (var i = 0; i < result.length; i++) {
+						result[i].created_at = sd_time
+						.format(result[i].created_at, 
+							"YYYY-MM-DD hh:mm");
+						list_dom+= ver_item_temp({
+							item: result[i]
+						});
+					}
+					res.send({
+						is_get: is_get,
+						list_dom: list_dom
+					});
+				}else{
+					res.send({
+						is_get: is_get
+					});
+				}
+			}
+		});
+	}else{
+		get_opt = {
+			select_opt: "note_content",
+			where_opt: "note_id='"+req_body.ver_id+"'"
+		};
+		dbCon.verGet(client, get_opt, function(err,result){
+			if(err) throw err;
+			if(!err){
+				console.log(result);
+				var is_get = result.length>0;
+				var note_content = result[0].note_content;
+				res.send({
+					is_get: is_get,
+					note_content: note_content
+				});
+			}
+		});
+	}
+
+	
+
+	
+});
+router.post("/verSave",function(req, res, next){
+	var req_body = req.body;
+
+	var ver_note_msg = {
+		note_content: req_body.note_content,
+		note_abstract: req_body.note_abstract,
+		belong_note_id: req_body.belong_note_id,
+		note_id: uuidV4(),
+		note_type: req_body.note_type,
+		created_user_id: req.session.islogin.user_id,
+		created_at: getDateTime()
+	};
+
+	var insert_val = [
+		ver_note_msg.note_id,
+		ver_note_msg.belong_note_id,
+		ver_note_msg.note_type,
+		ver_note_msg.created_at,
+		ver_note_msg.created_user_id,
+		ver_note_msg.note_content,
+		ver_note_msg.note_abstract
+	];
+
+	dbCon.verSave(client, insert_val, function(err,result){
+		if(err) throw err;
+		if(!err){
+			var is_affected = result.affectedRows>0;
+			if (is_affected) {
+				res.send({
+					is_saved: is_affected
+				});
+			}
+		}
+	});
+
+	
+
 });
 
 module.exports = router;

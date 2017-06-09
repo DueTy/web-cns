@@ -10,6 +10,8 @@ require.extensions[".ejs"] = art_temp.extension;
 var multer = require("multer");
 var md5 = require("md5");
 
+var client = dbCon.connect();
+
 
 function getDateTime(){
 	return sd_time.format(new Date(), 'YYYY-MM-DD hh:mm:ss');

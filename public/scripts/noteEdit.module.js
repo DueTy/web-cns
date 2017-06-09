@@ -7,6 +7,7 @@ define("noteEdit", function(require,exports,module){
 		view_list = $(".view-list"),
 		name_cont = edit_bar.find(".name-cont"),
 		save_btn = edit_bar.find(".save-btn"),
+		version_btn = edit_bar.find(".version-btn"),
 		share_btn = edit_bar.find(".share-btn"),
 		edit_cont = $(".edit-cont"),
 		folder_item_list = $(".folder-item-list"),
@@ -40,8 +41,9 @@ define("noteEdit", function(require,exports,module){
 		        //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
 		        imageUpload : true,
 		        imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-		        imageUploadURL : "./php/upload.php",
-		        onload : function() {
+		        imageUploadURL : "./php/upload.php",  
+                readOnly: false,
+                onload : function() {
 		            // console.log('onload', this);
 		            //this.fullscreen();
 		            //this.unwatch();
@@ -74,9 +76,11 @@ define("noteEdit", function(require,exports,module){
 		name_cont.text(this_name);
 
 		save_btn.attr("data-entity-id", note_id);
+		version_btn.attr("data-entity-id", note_id);
 		share_btn.attr("data-entity-id", note_id);
 
 		save_btn.attr("data-type", note_type);
+		version_btn.attr("data-type",  note_type);
 		share_btn.attr("data-type",  note_type);
 
 		var post_data = {
@@ -94,7 +98,7 @@ define("noteEdit", function(require,exports,module){
 					mk: ["<div id=\"editor\"><textarea style=\"display:none;\">"+
 					note_content+"</textarea></div>"].join(""),
 					note: ["<div id=\"editor\">"+note_content+"</div>"].join("")
-				}
+				};
 				edit_cont.html("").append(editor_dom[note_type]);
 				var editorInit = editor_init[editorInitKey];
 				editorInit();
@@ -119,7 +123,7 @@ define("noteEdit", function(require,exports,module){
 		var _this = $(this),
 			note_type = _this.attr("data-type"),
 			post_data = {};
-		_this.text("正在保存")
+		_this.text("正在保存");
 		post_data.note_id = _this.attr("data-entity-id");
 		if(note_type==="note"){
 			var abstract = getAbstract(CKEDITOR.instances.editor.document.getBody().getText());
@@ -140,11 +144,42 @@ define("noteEdit", function(require,exports,module){
 			success:function(data){
 				if(data.is_saved){
 					if(folder_list_title.hasClass("title-selected")){
-						folder_list_title.trigger("click")
+						folder_list_title.trigger("click");
 					}else{
-						folder_item_list.find(".selected").trigger("click");
+						$(".side-bar-main").find(".selected").trigger("click");
 					}
 					_this.text("保存");
+				}
+			}
+		});
+	}
+	version_btn.on("click",verSave);
+
+	function verSave(){
+		save_btn.trigger("click");
+		var _this = $(this),
+			note_type = _this.attr("data-type"),
+			post_data = {};
+		_this.text("正在生成");
+		post_data.belong_note_id = _this.attr("data-entity-id");
+		post_data.note_type = note_type; 
+		if(note_type==="note"){
+			var abstract = getAbstract(CKEDITOR.instances.editor.document.getBody().getText());
+			
+			post_data.note_content = CKEDITOR.instances.editor.getData();
+			post_data.note_abstract = abstract;
+		}else{
+			post_data.note_content = editor_md.getMarkdown();
+			post_data.note_abstract = "";
+		}
+		$.ajax({
+			url: "/verSave",
+			type: "POST",
+			dataType: "JSON",
+			data: post_data,
+			success:function(data){
+				if(data.is_saved){
+					_this.text("生成版本");
 				}
 			}
 		});

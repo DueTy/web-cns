@@ -1,5 +1,5 @@
 router.post("/rename",function(req, res, next){
-	var client = dbCon.connect();
+	
 	var req_body = req.body;
 
 	var modify_time = getDateTime();

@@ -4,7 +4,6 @@ router.route('/reg').get(function(req, res) {
         title: '注册'
     });
 }).post(function(req, res) {
-    client = dbCon.connect();
     var req_body = req.body;
     
     var user_msg = {

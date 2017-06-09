@@ -1,7 +1,7 @@
 var side_bar_item_temp = require("../views/sideItemTemp.ejs");
 
 router.post("/newFolder",function(req, res, next){
-	var client = dbCon.connect();
+	
 
 	var folder_id = uuidV4();
 	var req_body = req.body;

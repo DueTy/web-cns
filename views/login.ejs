@@ -1,6 +1,7 @@
 <%- include header %>
-    <div class="container">
-        <form class="login-form col-sm-offset-4 col-sm-4 form-horizontal" role="form" method="post">
+    <div class="msg-form-container">
+        <form class="msg-form login-form col-sm-offset-4 col-sm-4 form-horizontal" role="form" method="post">
+            <p class="login-cont-title">账号登录</p>
             <fieldset>
                 <% if(locals.islogin) { %>
                     <h3>你已经登录</h3><br>
@@ -27,4 +28,4 @@
             </fieldset>
         </form>
     </div>
-    <%- include footer %>
+<%- include footer %>

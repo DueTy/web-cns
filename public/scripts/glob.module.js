@@ -30,8 +30,10 @@ define(function(require){
     		autoScrollOnFocus:false
   		}
 	};
+
 	view_list.mCustomScrollbar(scroll_opts);
 	folder_item_list.mCustomScrollbar(scroll_opts);
+	$(".version-list").mCustomScrollbar(scroll_opts);
 
 	folder_item_list = $(".folder-item-list");
 	view_list = $(".view-list");
@@ -40,6 +42,13 @@ define(function(require){
 	require("newFolder");
 	require("delFolder");
 	require("delNote");
+	require("getNewestNote");
+	require("getSearchNote");
+	require("userMsgModify");
+	if($(".share-box")[0]){
+		require("noteShare");
+	}
+	require("verMag");
 
 
 	function sideBarOpt(){
@@ -92,6 +101,31 @@ define(function(require){
  		var post_data = {},
  			_this = $(this),
  			note_id = _this.attr("data-entity-id");		
+ 	});
+ 	var menu_share = $(".note-detail-menu .share");
+
+ 	menu_share.on("click", function() {
+
+ 		var share_note_id = $(this)
+					 		.parent(".widget-menu")
+					 		.attr("data-target-id"),
+ 			note_type = view_list
+				 			.find("div[data-entity-id="+share_note_id+"]")
+				 			.attr("data-type"),
+ 			local_host = window.location.href.split("/")[2];
+ 		var share_link = "http://"+local_host + "/share/" +share_note_id+"/"+note_type;
+ 		var temp_ipt = $(["<input type=\"text\">"].join(""));
+ 		temp_ipt.attr("value",share_link);
+ 		view_list.prepend(temp_ipt);
+        temp_ipt.select();
+        document.execCommand("Copy");
+        temp_ipt.remove();
+        var war_msg = $(".warn-msg");
+        // war_msg.find(".due-if").remove();
+        $(".warn-msg").find(".msg-text").text("链接已复制到剪贴板"); 	
+        $(".warn-msg").backLayer({
+        	closeCall: warnCloseCall
+        });	
  	});
 
 	var new_btn = $(".side-bar .new-btn"),
@@ -154,15 +188,27 @@ define(function(require){
  						$(window).on("resize", function() {
  							cont_empty.css("margin-top",view_list.height()/2-20+"px");
  						});
+ 						edit_cont.prev(".bar-top").find(".name-cont").text("");
  					}
  				}
  				view_list.mCustomScrollbar("scrollTo","top");
  			}
  		});	
+ 		$(".side-bar-list").find(".selected").removeClass("selected");
  		folder_list_title.removeClass("title-selected");
- 		folder_item_list.find(".item-cont").removeClass("selected");
  		var is_title_folder = _this.hasClass("folder-list-title")?true:false;
- 		is_title_folder?_this.addClass("title-selected"):_this.addClass("selected");
- 		
+ 		is_title_folder?_this.addClass("title-selected"):_this.addClass("selected"); 		
 	}
+	function warnCloseCall(containerBox, layer){
+		var warn_interval,
+		count_down = 1;
+		warn_interval = setInterval(function(){
+			count_down--;
+			if (count_down===0) {
+				clearInterval(warn_interval);
+				containerBox.hide();
+				layer.remove();
+			}
+		},1500);
+	} 
 });

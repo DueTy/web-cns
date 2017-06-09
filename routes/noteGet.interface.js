@@ -1,5 +1,5 @@
 router.post("/getNote", function(req, res, next){
-	var client = dbCon.connect();
+	
 	var req_body = req.body;
 
 	var note_id = req_body.note_id;

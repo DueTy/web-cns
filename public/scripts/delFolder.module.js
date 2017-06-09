@@ -32,19 +32,21 @@ define("delFolder",function(require,exports,module){
 			dataType: "JSON",
 			data: post_data,
 			success: function(data){
-				if (data.is_delete_all&&is_par_has_sub) {
-					var bro_num = folder.parent(".folder-item").siblings().length;
-					if (bro_num===0) {
-						var par_list = folder.parent(".folder-item").parent(".sub-list"),
-							prev_cont = par_list.prev(".item-cont");
-						console.log(prev_cont);
-						prev_cont.removeClass("folder-open");
-						prev_cont.children(".has-sub").find(".arr-icon").remove();
+				if (data.is_delete_all) {
+					if (is_par_has_sub) {
+						var bro_num = folder.parent(".folder-item").siblings().length;
+						if (bro_num===0) {
+							var par_list = folder.parent(".folder-item").parent(".sub-list"),
+								prev_cont = par_list.prev(".item-cont");
+							prev_cont.removeClass("folder-open");
+							prev_cont.children(".has-sub").find(".arr-icon").remove();
+						}
 					}
-					folder.remove();					
+					folder.next(".sub-list").remove();
+					folder.remove();	
+
 				}
 			}
-
 		});
 	}
 });

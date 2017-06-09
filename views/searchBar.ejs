@@ -2,15 +2,16 @@
 	<div class="bar-top">
 		<section class="search-cont">
 			<span class="due-if cns-btn">&#xe600;</span>
-			<input class="search-ipt" type="text" placeholder="搜索...">
+			<input class="search-ipt" type="text" placeholder="标题查找...">
 		</section>
 	</div>
 	<div class="search-bar-main">
 		<ul class="view-list">
-			<% if(search_data){ 
-				search_data.forEach(function(item){%>
+			<% if(search_data){ %>
+			<%	search_data.forEach(function(item){%>
 			<%- include searchItemTemp %>
-			<% })} %>
+			<% }); %>
+			<% } %>
 		</ul>
 	</div>
 	<span class="side-open cns-btn">&gt;</span>
